@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Perfboard Editor</title>
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Perfboard Editor</div>
+    <button id="toggleLeftPanelBtn" title="Sol paneli aç/kapat" style="display:none;">‹ Left</button>
+    <button id="toggleRightPanelBtn" title="Sağ paneli aç/kapat" style="display:none;">Right ›</button>
+    <span class="divider"></span>
+    <button id="newProjectBtn">New</button>
+    <button id="openProjectBtn">Open</button>
+    <button id="saveProjectBtn">Save</button>
+    <button id="saveProjectAsBtn">Save As</button>
+    <button id="backupProjectBtn">Backup</button>
+    <span class="divider"></span>
+    <button id="printSchematicBtn">Scheme</button>
+    <button id="printLayoutBtn">Layout</button>
+    <select id="layoutPrintMode" title="Layout print mode">
+      <option value="auto">Layout: Auto</option>
+      <option value="two-up">Layout: Side by side</option>
+      <option value="separate">Layout: 2 pages</option>
+    </select>
+    <button id="view3dBtn">3D</button>
+    <button id="bomBtn">BOM</button>
+    <span class="spacer"></span>
+    <span id="saveState" class="save-state">Ready</span>
+    <button id="themeBtn" title="Theme">☾</button>
+  </header>
+
+  <div class="app-shell">
+    <aside class="side-panel left-panel">
+      <button id="collapseLeftPanelBtn" class="left-panel-collapse-button" title="Sol paneli kapat">‹</button>
+      <section class="panel-section">
+        <h2>Tools</h2>
+        <div class="button-grid">
+          <button class="tool-btn is-active" data-tool="select">Select</button>
+          <button class="tool-btn" data-tool="wire">Wire</button>
+          <button class="tool-btn" data-tool="wireErase">Erase</button>
+          <button class="tool-btn" data-tool="text">Text</button>
+        </div>
+      </section>
+
+      <section class="panel-section">
+        <h2>Components</h2>
+        <div class="palette-list">
+          <button data-place="resistor">Resistor</button>
+          <button data-place="capacitor">Capacitor</button>
+          <button data-place="electrolytic">Electrolytic</button>
+          <button data-place="led">LED</button>
+          <button data-place="crystal">Crystal</button>
+          <button data-place="smdResistor">SMD Resistor / 2-hole</button>
+          <button data-place="smdCapacitor">SMD Capacitor / 2-hole</button>
+          <button data-place="smdElectrolytic">SMD Electrolytic / 2-hole</button>
+          <button data-place="smdLed">SMD LED / 2-hole</button>
+          <button data-place="ic">IC / DIP</button>
+          <button data-place="header">Header</button>
+          <button data-place="jackpads">Jack pads</button>
+          <button data-place="testpad">Test pad</button>
+        </div>
+      </section>
+
+      <section class="panel-section">
+        <h2>Board</h2>
+        <div class="form-grid">
+          <label>Cols <input id="boardCols" type="number" min="5" /></label>
+          <label>Rows <input id="boardRows" type="number" min="5" /></label>
+          <label>Pitch px <input id="boardPitch" type="number" min="10" /></label>
+          <label>Hole Ø mm <input id="holeDiameter" type="number" step="0.1" min="0.1" /></label>
+          <label>Pad Ø mm <input id="padDiameter" type="number" step="0.1" min="0.2" /></label>
+          <label>Unit <input id="gridUnit" /></label>
+          <label>Color <input id="boardColor" type="color" /></label>
+          <label class="check-row"><input id="pthMode" type="checkbox" /> PTH holes</label>
+          <button id="applyBoardBtn" class="wide">Apply board</button>
+        </div>
+      </section>
+
+      <section class="panel-section">
+        <h2>View</h2>
+        <div class="view-options">
+          <label class="view-check"><input id="viewShowLabels" type="checkbox" /> Labels</label>
+          <label class="view-check"><input id="viewShowPinNames" type="checkbox" /> Pin names</label>
+          <label class="view-check"><input id="viewShowRulers" type="checkbox" /> Rulers</label>
+          <label class="view-check"><input id="viewShowBack" type="checkbox" /> Opposite side ghost</label>
+          <label class="view-check"><input id="viewWiresOnTop" type="checkbox" /> Wires above components</label>
+        </div>
+      </section>
+
+    </aside>
+
+    <main class="workspace">
+      <svg id="editorSvg" tabindex="0" aria-label="Perfboard editor canvas"></svg>
+      <div class="floating-layer-controls" aria-label="Layer view">
+        <button class="face-btn is-active" data-face="top">Top</button>
+        <button class="face-btn" data-face="bottom">Bottom</button>
+        <button class="face-btn" data-face="both">Both</button>
+      </div>
+      <div class="floating-controls">
+        <button id="zoomOutBtn">−</button>
+        <span id="zoomText">100%</span>
+        <button id="zoomInBtn">+</button>
+        <button id="zoomResetBtn">Reset</button>
+      </div>
+      <div id="statusBar" class="status-bar is-empty"></div>
+    </main>
+
+    <aside class="side-panel right-panel">
+      <button id="collapseRightPanelBtn" class="right-panel-collapse-button" title="Sağ paneli kapat">›</button>
+      <section class="panel-section">
+        <h2>Inspector</h2>
+        <div id="inspector">Nothing selected.</div>
+      </section>
+      <section class="panel-section">
+        <h2>Selected pins</h2>
+        <div id="pinList" class="pin-list-empty">Select a component to edit pin names.</div>
+      </section>
+
+      <section class="panel-section">
+        <h2>Components</h2>
+        <div id="componentList" class="object-list"></div>
+      </section>
+      <section class="panel-section">
+        <h2>Wires</h2>
+        <div id="wireList" class="object-list"></div>
+      </section>
+      <section class="panel-section">
+        <h2>Checks</h2>
+        <button id="runChecksBtn">Run simple checks</button>
+        <div id="checkResults" class="check-results"></div>
+      </section>
+    </aside>
+  </div>
+
+  <input id="fallbackFileInput" type="file" accept=".json,.perfboard.json,application/json" hidden />
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="modalTitle">Modal</h2>
+        <button id="modalCloseBtn">×</button>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
