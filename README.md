@@ -8,9 +8,6 @@ The GitHub Pages deployment is available here:
 
 [https://smhgzll.github.io/perfboard-editor/](https://smhgzll.github.io/perfboard-editor/)
 
-Deployment page:
-
-[https://github.com/smhgzll/perfboard-editor/deployments/github-pages](https://github.com/smhgzll/perfboard-editor/deployments/github-pages)
 
 ![Perfboard Editor screenshot](assets/screenshot.png)
 
