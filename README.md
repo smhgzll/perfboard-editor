@@ -109,17 +109,12 @@ js/checks.js
 - Added a top-right minimap that shows the board rectangle and the current viewport so it is easier to see where you are after panning away.
 - Reworked the workspace grid as a subtle infinite background aligned to the board hole pitch; the perfboard surface itself is no longer covered by grid lines.
 - Kept selected component labels on a top overlay layer and removed label shadow/filter artifacts that could create triangular glitches.
-
-
-## License
-
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-
-### 2026-06-20 - Grid, floater and palette cleanup
-
 - Restored the perfboard surface look by drawing the workspace grid behind the board instead of over the board.
 - Rebuilt the background workspace grid so it follows the same pitch and origin as the board holes.
 - Moved zoom controls below the Top/Bottom/Both floater to avoid overlap.
 - Made the left component palette more compact with smaller one-line ellipsis labels.
 - Kept the view-only fullscreen button available in the zoom control group.
 
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
