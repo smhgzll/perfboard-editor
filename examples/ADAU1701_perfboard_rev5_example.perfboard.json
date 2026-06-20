@@ -1,0 +1,3767 @@
+{
+  "app": "Perfboard Editor Clean Build",
+  "savedAt": "2026-06-05T21:35:23.085Z",
+  "state": {
+    "version": "38.0-rev5-31x26-24m576-pll-512fs",
+    "name": "ADAU1701 perfboard - rev5 31x26, 24.576 MHz PLL mode 512fs",
+    "board": {
+      "cols": 31,
+      "rows": 26,
+      "pitchPx": 22,
+      "margin": 46,
+      "holeDiameterMm": 0.6,
+      "padDiameterMm": 1.2,
+      "gridUnit": "2.54mm",
+      "platedThroughHoles": true,
+      "color": "#26384d",
+      "pitch": 22,
+      "x": 44,
+      "y": 44,
+      "copperPattern": "isolated"
+    },
+    "view": {
+      "face": "top",
+      "showLabels": false,
+      "showPinNames": true,
+      "showRulers": true,
+      "showBack": true,
+      "wiresOnTop": true,
+      "theme": "dark",
+      "layoutPrintMode": "separate"
+    },
+    "components": [
+      {
+        "id": "I1",
+        "kind": "ic",
+        "name": "U1_ADAU1701",
+        "value": "ADAU1701 LQFP-48 adapter",
+        "col": 4,
+        "row": 9,
+        "rot": 0,
+        "color": "#2563eb",
+        "pins": [
+          {
+            "number": 1,
+            "name": "AGND",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "ADC0",
+            "x": 1,
+            "y": 0
+          },
+          {
+            "number": 3,
+            "name": "ADC_RES",
+            "x": 2,
+            "y": 0
+          },
+          {
+            "number": 4,
+            "name": "ADC1",
+            "x": 3,
+            "y": 0
+          },
+          {
+            "number": 5,
+            "name": "RESET",
+            "x": 4,
+            "y": 0
+          },
+          {
+            "number": 6,
+            "name": "SELFBOOT",
+            "x": 5,
+            "y": 0
+          },
+          {
+            "number": 7,
+            "name": "ADDR0",
+            "x": 6,
+            "y": 0
+          },
+          {
+            "number": 8,
+            "name": "MP4/IN_LRCLK",
+            "x": 7,
+            "y": 0
+          },
+          {
+            "number": 9,
+            "name": "MP5/IN_BCLK",
+            "x": 8,
+            "y": 0
+          },
+          {
+            "number": 10,
+            "name": "MP1/SDATA_IN0",
+            "x": 9,
+            "y": 0
+          },
+          {
+            "number": 11,
+            "name": "MP0/SDATA_IN1",
+            "x": 10,
+            "y": 0
+          },
+          {
+            "number": 12,
+            "name": "DGND",
+            "x": 11,
+            "y": 0
+          },
+          {
+            "number": 13,
+            "name": "DVDD",
+            "x": 12,
+            "y": 0
+          },
+          {
+            "number": 14,
+            "name": "MP7/SDATA_OUT1",
+            "x": 13,
+            "y": 0
+          },
+          {
+            "number": 15,
+            "name": "MP6/SDATA_OUT0",
+            "x": 14,
+            "y": 0
+          },
+          {
+            "number": 16,
+            "name": "MP10/OUT_LRCLK",
+            "x": 15,
+            "y": 0
+          },
+          {
+            "number": 17,
+            "name": "VDRIVE",
+            "x": 16,
+            "y": 0
+          },
+          {
+            "number": 18,
+            "name": "IOVDD",
+            "x": 17,
+            "y": 0
+          },
+          {
+            "number": 19,
+            "name": "MP11/OUT_BCLK",
+            "x": 18,
+            "y": 0
+          },
+          {
+            "number": 20,
+            "name": "ADDR1/WB",
+            "x": 19,
+            "y": 0
+          },
+          {
+            "number": 21,
+            "name": "CLATCH/WP",
+            "x": 20,
+            "y": 0
+          },
+          {
+            "number": 22,
+            "name": "SDA/COUT",
+            "x": 21,
+            "y": 0
+          },
+          {
+            "number": 23,
+            "name": "SCL/CCLK",
+            "x": 22,
+            "y": 0
+          },
+          {
+            "number": 24,
+            "name": "DVDD",
+            "x": 23,
+            "y": 0
+          },
+          {
+            "number": 25,
+            "name": "DGND",
+            "x": 23,
+            "y": 7
+          },
+          {
+            "number": 26,
+            "name": "MP9/SDATA_OUT3/AUX0",
+            "x": 22,
+            "y": 7
+          },
+          {
+            "number": 27,
+            "name": "MP8/SDATA_OUT2/AUX3",
+            "x": 21,
+            "y": 7
+          },
+          {
+            "number": 28,
+            "name": "MP3/SDATA_IN3/AUX2",
+            "x": 20,
+            "y": 7
+          },
+          {
+            "number": 29,
+            "name": "MP2/SDATA_IN2/AUX1",
+            "x": 19,
+            "y": 7
+          },
+          {
+            "number": 30,
+            "name": "RSVD",
+            "x": 18,
+            "y": 7
+          },
+          {
+            "number": 31,
+            "name": "OSCO",
+            "x": 17,
+            "y": 7
+          },
+          {
+            "number": 32,
+            "name": "MCLKI",
+            "x": 16,
+            "y": 7
+          },
+          {
+            "number": 33,
+            "name": "PGND",
+            "x": 15,
+            "y": 7
+          },
+          {
+            "number": 34,
+            "name": "PVDD",
+            "x": 14,
+            "y": 7
+          },
+          {
+            "number": 35,
+            "name": "PLL_LF",
+            "x": 13,
+            "y": 7
+          },
+          {
+            "number": 36,
+            "name": "AVDD",
+            "x": 12,
+            "y": 7
+          },
+          {
+            "number": 37,
+            "name": "AGND",
+            "x": 11,
+            "y": 7
+          },
+          {
+            "number": 38,
+            "name": "PLL_MODE0",
+            "x": 10,
+            "y": 7
+          },
+          {
+            "number": 39,
+            "name": "PLL_MODE1",
+            "x": 9,
+            "y": 7
+          },
+          {
+            "number": 40,
+            "name": "CM",
+            "x": 8,
+            "y": 7
+          },
+          {
+            "number": 41,
+            "name": "FILTD",
+            "x": 7,
+            "y": 7
+          },
+          {
+            "number": 42,
+            "name": "AGND",
+            "x": 6,
+            "y": 7
+          },
+          {
+            "number": 43,
+            "name": "VOUT3",
+            "x": 5,
+            "y": 7
+          },
+          {
+            "number": 44,
+            "name": "VOUT2",
+            "x": 4,
+            "y": 7
+          },
+          {
+            "number": 45,
+            "name": "VOUT1",
+            "x": 3,
+            "y": 7
+          },
+          {
+            "number": 46,
+            "name": "VOUT0",
+            "x": 2,
+            "y": 7
+          },
+          {
+            "number": 47,
+            "name": "FILTA",
+            "x": 1,
+            "y": 7
+          },
+          {
+            "number": 48,
+            "name": "AVDD",
+            "x": 0,
+            "y": 7
+          }
+        ],
+        "w": 24,
+        "h": 8,
+        "pinned": false
+      },
+      {
+        "id": "H1",
+        "kind": "header",
+        "name": "J_CTRL_I2C",
+        "value": "GND +5V RESET SCL SDA",
+        "col": 30,
+        "row": 8,
+        "rot": 90,
+        "color": "#38bdf8",
+        "pins": [
+          {
+            "number": 1,
+            "name": "GND",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "5V",
+            "x": 1,
+            "y": 0
+          },
+          {
+            "number": 3,
+            "name": "RESET",
+            "x": 2,
+            "y": 0
+          },
+          {
+            "number": 4,
+            "name": "SCL",
+            "x": 3,
+            "y": 0
+          },
+          {
+            "number": 5,
+            "name": "SDA",
+            "x": 4,
+            "y": 0
+          }
+        ],
+        "w": 5,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "J1",
+        "kind": "jackpads",
+        "name": "J_AUDIO_IN",
+        "value": "IN_L IN_R GND",
+        "col": 0,
+        "row": 4,
+        "rot": 0,
+        "color": "#7c3aed",
+        "pins": [
+          {
+            "number": 1,
+            "name": "L",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "R",
+            "x": 0,
+            "y": 1
+          },
+          {
+            "number": 3,
+            "name": "GND",
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "w": 1,
+        "h": 3,
+        "pinned": false
+      },
+      {
+        "id": "J2",
+        "kind": "jackpads",
+        "name": "J_AUDIO_OUT",
+        "value": "OUT_L OUT_R GND",
+        "col": 0,
+        "row": 19,
+        "rot": 0,
+        "color": "#10b981",
+        "pins": [
+          {
+            "number": 1,
+            "name": "L",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "R",
+            "x": 0,
+            "y": 1
+          },
+          {
+            "number": 3,
+            "name": "GND",
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "w": 1,
+        "h": 3,
+        "pinned": false
+      },
+      {
+        "id": "C1",
+        "kind": "crystal",
+        "name": "Y1_XTAL_24M576",
+        "value": "24.576 MHz crystal / MCLKI 512×fs",
+        "col": 19,
+        "row": 20,
+        "rot": 0,
+        "color": "#8b5cf6",
+        "pins": [
+          {
+            "number": 1,
+            "name": "XTAL1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "XTAL2",
+            "x": 3,
+            "y": 0
+          }
+        ],
+        "w": 4,
+        "h": 2,
+        "pinned": false
+      },
+      {
+        "id": "C2",
+        "kind": "capacitor",
+        "name": "C_XTAL_MCLKI_22p",
+        "value": "22 pF C0G/NP0",
+        "col": 20,
+        "row": 22,
+        "rot": 90,
+        "color": "#c4b5fd",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "C3",
+        "kind": "capacitor",
+        "name": "C_XTAL_OSCO_22p",
+        "value": "22 pF C0G/NP0",
+        "col": 21,
+        "row": 22,
+        "rot": 90,
+        "color": "#c4b5fd",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "R3",
+        "kind": "resistor",
+        "name": "R_OSCO_SER_100R",
+        "value": "100 Ω",
+        "col": 21,
+        "row": 17,
+        "rot": 90,
+        "color": "#fbbf24",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "R4",
+        "kind": "resistor",
+        "name": "R_ADC_RES_18K_1%",
+        "value": "18 kΩ 1%",
+        "col": 6,
+        "row": 10,
+        "rot": 90,
+        "color": "#fbbf24",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "H2",
+        "kind": "header",
+        "name": "J_PWR_IN",
+        "value": "GND +5V +1V8 +3V3",
+        "col": 21,
+        "row": 1,
+        "rot": 90,
+        "color": "#60a5fa",
+        "pins": [
+          {
+            "number": 1,
+            "name": "GND",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "5V",
+            "x": 1,
+            "y": 0
+          },
+          {
+            "number": 3,
+            "name": "1.8V",
+            "x": 2,
+            "y": 0
+          },
+          {
+            "number": 4,
+            "name": "3.3V",
+            "x": 3,
+            "y": 0
+          }
+        ],
+        "w": 4,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "R1",
+        "kind": "resistor",
+        "name": "R_SDA_PU_2K2",
+        "value": "2.2 kΩ pull-up",
+        "col": 25,
+        "row": 7,
+        "rot": 90,
+        "color": "#fbbf24",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "R2",
+        "kind": "resistor",
+        "name": "R_SCL_PU_2K2",
+        "value": "2.2 kΩ pull-up",
+        "col": 26,
+        "row": 7,
+        "rot": 90,
+        "color": "#fbbf24",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "C4",
+        "kind": "capacitor",
+        "name": "C_IOVDD_100n_X7R",
+        "value": "100 nF X7R",
+        "col": 22,
+        "row": 7,
+        "rot": 0,
+        "color": "#dbeafe",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "C5",
+        "kind": "capacitor",
+        "name": "C_IOVDD_BULK_10uF",
+        "value": "10 µF X5R/X7R bulk",
+        "col": 22,
+        "row": 8,
+        "rot": 0,
+        "color": "#dbeafe",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "R5",
+        "kind": "resistor",
+        "name": "R_ADC0_IN_18K_1%",
+        "value": "18 kΩ 1%",
+        "col": 5,
+        "row": 7,
+        "rot": 90,
+        "color": "#60a5fa",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "R6",
+        "kind": "resistor",
+        "name": "R_ADC1_IN_18K_1%",
+        "value": "18 kΩ 1%",
+        "col": 7,
+        "row": 7,
+        "rot": 90,
+        "color": "#a78bfa",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "E1",
+        "kind": "electrolytic",
+        "name": "C_ADC1_AC_47uF_ELEC",
+        "value": "47 µF electrolytic (+ to ADC1)",
+        "col": 1,
+        "row": 4,
+        "rot": 90,
+        "color": "#fcd34d",
+        "pins": [
+          {
+            "number": 1,
+            "name": "+",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "-",
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "w": 1,
+        "h": 2,
+        "pinned": false
+      },
+      {
+        "id": "E2",
+        "kind": "electrolytic",
+        "name": "C_ADC0_AC_47uF_ELEC",
+        "value": "47 µF electrolytic (+ to ADC0)",
+        "col": 1,
+        "row": 5,
+        "rot": 90,
+        "color": "#fcd34d",
+        "pins": [
+          {
+            "number": 1,
+            "name": "+",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "-",
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "w": 1,
+        "h": 2,
+        "pinned": false
+      },
+      {
+        "id": "E3",
+        "kind": "electrolytic",
+        "name": "C_VOUT2_L_AC_47uF_ELEC",
+        "value": "47 µF electrolytic (+ to VOUT2)",
+        "col": 8,
+        "row": 17,
+        "rot": 0,
+        "color": "#fcd34d",
+        "pins": [
+          {
+            "number": 1,
+            "name": "+",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "-",
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "w": 1,
+        "h": 2,
+        "pinned": false
+      },
+      {
+        "id": "E4",
+        "kind": "electrolytic",
+        "name": "C_VOUT3_R_AC_47uF_ELEC",
+        "value": "47 µF electrolytic (+ to VOUT3)",
+        "col": 9,
+        "row": 17,
+        "rot": 0,
+        "color": "#fcd34d",
+        "pins": [
+          {
+            "number": 1,
+            "name": "+",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "-",
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "w": 1,
+        "h": 2,
+        "pinned": false
+      },
+      {
+        "id": "R7",
+        "kind": "resistor",
+        "name": "R_VOUT2_L_560R",
+        "value": "560 Ω",
+        "col": 1,
+        "row": 19,
+        "rot": 0,
+        "color": "#fbbf24",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "R8",
+        "kind": "resistor",
+        "name": "R_VOUT3_R_560R",
+        "value": "560 Ω",
+        "col": 1,
+        "row": 20,
+        "rot": 0,
+        "color": "#fbbf24",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "C6",
+        "kind": "capacitor",
+        "name": "C_VOUT2_L_LPF_5n6",
+        "value": "5.6 nF C0G/film",
+        "col": 1,
+        "row": 17,
+        "rot": 90,
+        "color": "#bbf7d0",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "C7",
+        "kind": "capacitor",
+        "name": "C_VOUT3_R_LPF_5n6",
+        "value": "5.6 nF C0G/film",
+        "col": 1,
+        "row": 21,
+        "rot": 90,
+        "color": "#bbf7d0",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "C8",
+        "kind": "capacitor",
+        "name": "C_AVDD_PVDD_100n_X7R",
+        "value": "100 nF X7R",
+        "col": 22,
+        "row": 6,
+        "rot": 0,
+        "color": "#dbeafe",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "C9",
+        "kind": "capacitor",
+        "name": "C_3V3_DEC_100n_X7R",
+        "value": "100 nF X7R",
+        "col": 22,
+        "row": 5,
+        "rot": 0,
+        "color": "#dbeafe",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "C10",
+        "kind": "capacitor",
+        "name": "C_DVDD_BULK_10uF",
+        "value": "10 µF X5R/X7R bulk / 1.8V",
+        "col": 15,
+        "row": 7,
+        "rot": 0,
+        "color": "#dbeafe",
+        "pins": [
+          {
+            "number": 1,
+            "name": "GND",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "+1V8",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "C11",
+        "kind": "capacitor",
+        "name": "C_DVDD_P13_100n_X7R",
+        "value": "100 nF X7R",
+        "col": 15,
+        "row": 8,
+        "rot": 0,
+        "color": "#dbeafe",
+        "pins": [
+          {
+            "number": 1,
+            "name": "GND",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "+1V8",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "C12",
+        "kind": "capacitor",
+        "name": "C_DVDD_P24_100n_X7R",
+        "value": "100 nF X7R",
+        "col": 27,
+        "row": 7,
+        "rot": 0,
+        "color": "#dbeafe",
+        "pins": [
+          {
+            "number": 1,
+            "name": "+1V8",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "GND",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "C13",
+        "kind": "capacitor",
+        "name": "C_FILTA_100n_X7R",
+        "value": "100 nF X7R",
+        "col": 1,
+        "row": 15,
+        "rot": 0,
+        "color": "#dbeafe",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "E5",
+        "kind": "electrolytic",
+        "name": "C_FILTA_10uF_ELEC",
+        "value": "10 µF electrolytic (+ to FILTA)",
+        "col": 1,
+        "row": 16,
+        "rot": 90,
+        "color": "#fcd34d",
+        "pins": [
+          {
+            "number": 1,
+            "name": "+",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "-",
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "w": 1,
+        "h": 2,
+        "pinned": false
+      },
+      {
+        "id": "C14",
+        "kind": "capacitor",
+        "name": "C_CM_100n_X7R",
+        "value": "100 nF X7R",
+        "col": 13,
+        "row": 18,
+        "rot": 90,
+        "color": "#dbeafe",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "E6",
+        "kind": "electrolytic",
+        "name": "C_CM_47uF_ELEC",
+        "value": "47 µF electrolytic (+ to CM)",
+        "col": 14,
+        "row": 18,
+        "rot": 0,
+        "color": "#fcd34d",
+        "pins": [
+          {
+            "number": 1,
+            "name": "+",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "-",
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "w": 1,
+        "h": 2,
+        "pinned": false
+      },
+      {
+        "id": "C15",
+        "kind": "capacitor",
+        "name": "C_FILTD_100n_X7R",
+        "value": "100 nF X7R",
+        "col": 11,
+        "row": 18,
+        "rot": 90,
+        "color": "#dbeafe",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "E7",
+        "kind": "electrolytic",
+        "name": "C_FILTD_10uF_ELEC",
+        "value": "10 µF electrolytic (+ to FILTD)",
+        "col": 12,
+        "row": 18,
+        "rot": 0,
+        "color": "#fcd34d",
+        "pins": [
+          {
+            "number": 1,
+            "name": "+",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "-",
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "w": 1,
+        "h": 2,
+        "pinned": false
+      },
+      {
+        "id": "C16",
+        "kind": "capacitor",
+        "name": "C_PLL_LF_3n3",
+        "value": "3.3 nF C0G/film",
+        "col": 17,
+        "row": 17,
+        "rot": 0,
+        "color": "#f0abfc",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "C17",
+        "kind": "capacitor",
+        "name": "C_PLL_LF_56n",
+        "value": "56 nF X7R/film",
+        "col": 16,
+        "row": 19,
+        "rot": 0,
+        "color": "#f0abfc",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "R9",
+        "kind": "resistor",
+        "name": "R_PLL_LF_475R",
+        "value": "475 Ω",
+        "col": 16,
+        "row": 17,
+        "rot": 90,
+        "color": "#fbbf24",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      },
+      {
+        "id": "R10",
+        "kind": "resistor",
+        "name": "R_VDRIVE_OPT_10K",
+        "value": "10 kΩ optional / keep original route",
+        "col": 22,
+        "row": 10,
+        "rot": 90,
+        "color": "#fbbf24",
+        "pins": [
+          {
+            "number": 1,
+            "name": "1",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "number": 2,
+            "name": "2",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "w": 2,
+        "h": 1,
+        "pinned": false
+      }
+    ],
+    "wires": [
+      {
+        "id": "W2",
+        "name": "Hole 1,24 → J_AUDIO.GND",
+        "net": "GND",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 0,
+            "row": 24
+          },
+          {
+            "col": 0,
+            "row": 21
+          }
+        ]
+      },
+      {
+        "id": "W38",
+        "name": "Hole 4,13 → Hole 29,13 cut",
+        "net": "NET",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 22,
+            "row": 13
+          },
+          {
+            "col": 27,
+            "row": 13
+          }
+        ]
+      },
+      {
+        "id": "W5",
+        "name": "U1_AGND(P1) → Hole 5,13",
+        "net": "P1",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 4,
+            "row": 9
+          },
+          {
+            "col": 4,
+            "row": 11
+          }
+        ]
+      },
+      {
+        "id": "W6",
+        "name": "U1_SELFBOOT(P6) → Hole 10,13",
+        "net": "P6",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 9,
+            "row": 9
+          },
+          {
+            "col": 9,
+            "row": 11
+          }
+        ]
+      },
+      {
+        "id": "W7",
+        "name": "U1_ADDR0(P7) → Hole 11,13",
+        "net": "P7",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 10,
+            "row": 9
+          },
+          {
+            "col": 10,
+            "row": 11
+          }
+        ]
+      },
+      {
+        "id": "W9",
+        "name": "U1_AGND(P1)2 → Hole 16,13",
+        "net": "P12",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 15,
+            "row": 9
+          },
+          {
+            "col": 15,
+            "row": 11
+          }
+        ]
+      },
+      {
+        "id": "W10",
+        "name": "U1_ADC_RES(P3)7 → Hole 16,13",
+        "net": "P37",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 15,
+            "row": 16
+          },
+          {
+            "col": 15,
+            "row": 15
+          }
+        ]
+      },
+      {
+        "id": "W11",
+        "name": "U1_ADC_RES(P3)3 → Hole 20,13",
+        "net": "P33",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 19,
+            "row": 16
+          },
+          {
+            "col": 19,
+            "row": 15
+          }
+        ]
+      },
+      {
+        "id": "W12",
+        "name": "U1_ADC0(P2)0 → Hole 24,13",
+        "net": "P20",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 23,
+            "row": 9
+          },
+          {
+            "col": 23,
+            "row": 13
+          }
+        ]
+      },
+      {
+        "id": "W13",
+        "name": "U1_ADC0(P2)5 → Hole 28,13",
+        "net": "P25",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 27,
+            "row": 16
+          },
+          {
+            "col": 27,
+            "row": 13
+          }
+        ]
+      },
+      {
+        "id": "W14",
+        "name": "U1_ADC_RES(P3)6 → U1_ADC_RES(P3)4",
+        "net": "P36",
+        "layer": "top",
+        "style": "solid",
+        "color": "#14ff00",
+        "route": [
+          {
+            "col": 16,
+            "row": 16
+          },
+          {
+            "col": 16,
+            "row": 14
+          },
+          {
+            "col": 18,
+            "row": 14
+          },
+          {
+            "col": 18,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W15",
+        "name": "PLL_MODE0(P38) → PLL_MODE1 HIGH / 3.3V (24.576 MHz 512×fs)",
+        "net": "3.3V",
+        "layer": "top",
+        "style": "solid",
+        "color": "#22c55e",
+        "route": [
+          {
+            "col": 14,
+            "row": 16
+          },
+          {
+            "col": 13,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W16",
+        "name": "U1_ADC_RES(P3)0 → Hole 23,13",
+        "net": "P30",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 22,
+            "row": 16
+          },
+          {
+            "col": 22,
+            "row": 13
+          }
+        ]
+      },
+      {
+        "id": "W17",
+        "name": "U1_ADC_RES(P3)1 → R/C_1",
+        "net": "P31",
+        "layer": "top",
+        "style": "solid",
+        "color": "#8b5cf6",
+        "route": [
+          {
+            "col": 21,
+            "row": 16
+          },
+          {
+            "col": 21,
+            "row": 17
+          }
+        ]
+      },
+      {
+        "id": "W19",
+        "name": "Y?.XTAL2 → C_1",
+        "net": "XTAL2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#8b5cf6",
+        "route": [
+          {
+            "col": 22,
+            "row": 20
+          },
+          {
+            "col": 22,
+            "row": 21
+          }
+        ]
+      },
+      {
+        "id": "W20",
+        "name": "Y?.XTAL1 → C_1",
+        "net": "XTAL1",
+        "layer": "top",
+        "style": "solid",
+        "color": "#8b5cf6",
+        "route": [
+          {
+            "col": 19,
+            "row": 20
+          },
+          {
+            "col": 19,
+            "row": 21
+          }
+        ]
+      },
+      {
+        "id": "W29",
+        "name": "U1_AGND(P1)3 → Hole 17,8",
+        "net": "P13",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 16,
+            "row": 9
+          },
+          {
+            "col": 16,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W30",
+        "name": "U1_ADC0(P2)4 → Hole 28,8",
+        "net": "P24",
+        "layer": "top",
+        "style": "solid",
+        "color": "#60a5fa",
+        "route": [
+          {
+            "col": 27,
+            "row": 9
+          },
+          {
+            "col": 27,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W31",
+        "name": "U1_AGND(P1)8 → Hole 22,8",
+        "net": "P18",
+        "layer": "top",
+        "style": "solid",
+        "color": "#14ff00",
+        "route": [
+          {
+            "col": 21,
+            "row": 9
+          },
+          {
+            "col": 21,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W3",
+        "name": "U1_ADC_RES(P3)2 → Y1.XTAL1",
+        "net": "P32",
+        "layer": "top",
+        "style": "solid",
+        "color": "#8b5cf6",
+        "route": [
+          {
+            "col": 20,
+            "row": 16
+          },
+          {
+            "col": 20,
+            "row": 19
+          },
+          {
+            "col": 19,
+            "row": 19
+          },
+          {
+            "col": 19,
+            "row": 20
+          }
+        ]
+      },
+      {
+        "id": "W18",
+        "name": "R_OSCO.2 → Y1.XTAL2",
+        "net": "2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#8b5cf6",
+        "route": [
+          {
+            "col": 21,
+            "row": 18
+          },
+          {
+            "col": 21,
+            "row": 19
+          },
+          {
+            "col": 22,
+            "row": 19
+          },
+          {
+            "col": 22,
+            "row": 20
+          }
+        ]
+      },
+      {
+        "id": "W21",
+        "name": "J_PWR_3.3V → Hole 22,8",
+        "net": "3.3V",
+        "layer": "top",
+        "style": "solid",
+        "color": "#22c55e",
+        "route": [
+          {
+            "col": 21,
+            "row": 4
+          },
+          {
+            "col": 21,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W22",
+        "name": "J_PWR_1.8V → Hole 17,8",
+        "net": "1.8V",
+        "layer": "top",
+        "style": "solid",
+        "color": "#f59e0b",
+        "route": [
+          {
+            "col": 21,
+            "row": 3
+          },
+          {
+            "col": 16,
+            "row": 3
+          },
+          {
+            "col": 16,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W23",
+        "name": "J_PWR_1.8V → Hole 28,8",
+        "net": "1.8V",
+        "layer": "top",
+        "style": "solid",
+        "color": "#f59e0b",
+        "route": [
+          {
+            "col": 21,
+            "row": 3
+          },
+          {
+            "col": 27,
+            "row": 3
+          },
+          {
+            "col": 27,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W26",
+        "name": "U1_ADC0(P2)3 → J_CTRL_SCL",
+        "net": "P23",
+        "layer": "top",
+        "style": "solid",
+        "color": "#3b82f6",
+        "route": [
+          {
+            "col": 26,
+            "row": 9
+          },
+          {
+            "col": 26,
+            "row": 11
+          },
+          {
+            "col": 29,
+            "row": 11
+          }
+        ]
+      },
+      {
+        "id": "W27",
+        "name": "U1_ADC0(P2)2 → J_CTRL_SDA",
+        "net": "P22",
+        "layer": "top",
+        "style": "solid",
+        "color": "#06b6d4",
+        "route": [
+          {
+            "col": 25,
+            "row": 9
+          },
+          {
+            "col": 25,
+            "row": 12
+          },
+          {
+            "col": 29,
+            "row": 12
+          }
+        ]
+      },
+      {
+        "id": "W28",
+        "name": "J_CTRL_SCL jumper from SDA/SCL fanout → J_CTRL_SCL",
+        "net": "P23",
+        "layer": "top",
+        "style": "solid",
+        "color": "#3b82f6",
+        "route": [
+          {
+            "col": 29,
+            "row": 11
+          },
+          {
+            "col": 30,
+            "row": 11
+          }
+        ]
+      },
+      {
+        "id": "W33",
+        "name": "J_CTRL_SDA jumper from SDA/SCL fanout → J_CTRL_SDA",
+        "net": "P22",
+        "layer": "top",
+        "style": "solid",
+        "color": "#06b6d4",
+        "route": [
+          {
+            "col": 29,
+            "row": 12
+          },
+          {
+            "col": 30,
+            "row": 12
+          }
+        ]
+      },
+      {
+        "id": "W34",
+        "name": "J_CTRL_+5V → J_PWR_+5V",
+        "net": "5V",
+        "layer": "top",
+        "style": "solid",
+        "color": "#ef4444",
+        "route": [
+          {
+            "col": 30,
+            "row": 9
+          },
+          {
+            "col": 29,
+            "row": 9
+          },
+          {
+            "col": 29,
+            "row": 2
+          },
+          {
+            "col": 21,
+            "row": 2
+          }
+        ]
+      },
+      {
+        "id": "W35",
+        "name": "J_CTRL_GND → J_PWR_GND",
+        "net": "GND",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 30,
+            "row": 8
+          },
+          {
+            "col": 30,
+            "row": 1
+          },
+          {
+            "col": 21,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "id": "W36",
+        "name": "U1_RESET(P5) → J_CTRL_RESET insulated jumper",
+        "net": "P5",
+        "layer": "bottom",
+        "style": "dashed",
+        "color": "#eab308",
+        "route": [
+          {
+            "col": 8,
+            "row": 9
+          },
+          {
+            "col": 8,
+            "row": 10
+          },
+          {
+            "col": 30,
+            "row": 10
+          }
+        ]
+      },
+      {
+        "id": "W39",
+        "name": "Hole 20,15 → Hole 23,15",
+        "net": "P33",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 19,
+            "row": 15
+          },
+          {
+            "col": 22,
+            "row": 15
+          }
+        ]
+      },
+      {
+        "id": "W40",
+        "name": "U1_AGND(P1)8 → Hole 19,14",
+        "net": "P18",
+        "layer": "top",
+        "style": "solid",
+        "color": "#14ff00",
+        "route": [
+          {
+            "col": 21,
+            "row": 9
+          },
+          {
+            "col": 21,
+            "row": 14
+          },
+          {
+            "col": 18,
+            "row": 14
+          }
+        ]
+      },
+      {
+        "id": "W89",
+        "name": "Hole 17,14 → U1_ADC1(P4)8 cut",
+        "net": "P36",
+        "layer": "top",
+        "style": "solid",
+        "color": "#14ffe4",
+        "route": [
+          {
+            "col": 10,
+            "row": 14
+          },
+          {
+            "col": 4,
+            "row": 14
+          },
+          {
+            "col": 4,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W32",
+        "name": "Hole 20,21 → C_XTAL1.1",
+        "net": "XTAL1",
+        "layer": "top",
+        "style": "solid",
+        "color": "#8b5cf6",
+        "route": [
+          {
+            "col": 19,
+            "row": 21
+          },
+          {
+            "col": 20,
+            "row": 21
+          },
+          {
+            "col": 20,
+            "row": 22
+          }
+        ]
+      },
+      {
+        "id": "W37",
+        "name": "Hole 23,21 → C_XTAL2.1",
+        "net": "XTAL2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#8b5cf6",
+        "route": [
+          {
+            "col": 22,
+            "row": 21
+          },
+          {
+            "col": 21,
+            "row": 21
+          },
+          {
+            "col": 21,
+            "row": 22
+          }
+        ]
+      },
+      {
+        "id": "W46",
+        "name": "R_SDA_PU.2 → U1_ADC0(P2)2",
+        "net": "2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#06b6d4",
+        "route": [
+          {
+            "col": 25,
+            "row": 8
+          },
+          {
+            "col": 25,
+            "row": 9
+          }
+        ]
+      },
+      {
+        "id": "W47",
+        "name": "R_SCL_PU.2 → U1_ADC0(P2)3",
+        "net": "2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#3b82f6",
+        "route": [
+          {
+            "col": 26,
+            "row": 8
+          },
+          {
+            "col": 26,
+            "row": 9
+          }
+        ]
+      },
+      {
+        "id": "W49",
+        "name": "R_SDA_PU.1 → Hole 26,5",
+        "net": "1",
+        "layer": "top",
+        "style": "solid",
+        "color": "#06b6d4",
+        "route": [
+          {
+            "col": 25,
+            "row": 7
+          },
+          {
+            "col": 25,
+            "row": 5
+          }
+        ]
+      },
+      {
+        "id": "W48",
+        "name": "J_PWR_3.3V → R_SCL_PU.1",
+        "net": "3.3V",
+        "layer": "top",
+        "style": "solid",
+        "color": "#22c55e",
+        "route": [
+          {
+            "col": 21,
+            "row": 4
+          },
+          {
+            "col": 26,
+            "row": 4
+          },
+          {
+            "col": 26,
+            "row": 7
+          }
+        ]
+      },
+      {
+        "id": "W50",
+        "name": "Hole 26,5 → Hole 26,4",
+        "net": "1",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 25,
+            "row": 5
+          },
+          {
+            "col": 25,
+            "row": 4
+          }
+        ]
+      },
+      {
+        "id": "W51",
+        "name": "C_2 → C_2",
+        "net": "2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 23,
+            "row": 7
+          },
+          {
+            "col": 23,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W52",
+        "name": "C_2 → U1_ADC0(P2)0",
+        "net": "2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 23,
+            "row": 8
+          },
+          {
+            "col": 23,
+            "row": 9
+          }
+        ]
+      },
+      {
+        "id": "W54",
+        "name": "C_1 → Hole 22,8",
+        "net": "1",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 22,
+            "row": 8
+          },
+          {
+            "col": 21,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W53",
+        "name": "C_1 → Hole 22,7",
+        "net": "1",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 22,
+            "row": 7
+          },
+          {
+            "col": 21,
+            "row": 7
+          }
+        ]
+      },
+      {
+        "id": "W55",
+        "name": "U1_ADC0(P2) → R/C_2",
+        "net": "P2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#60a5fa",
+        "route": [
+          {
+            "col": 5,
+            "row": 9
+          },
+          {
+            "col": 5,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W56",
+        "name": "U1_ADC1(P4) → R/C_2",
+        "net": "P4",
+        "layer": "top",
+        "style": "solid",
+        "color": "#60a5fa",
+        "route": [
+          {
+            "col": 7,
+            "row": 9
+          },
+          {
+            "col": 7,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W61",
+        "name": "U1_ADC1(P4)4 → C_+",
+        "net": "P44",
+        "layer": "top",
+        "style": "solid",
+        "color": "#60a5fa",
+        "route": [
+          {
+            "col": 8,
+            "row": 16
+          },
+          {
+            "col": 8,
+            "row": 17
+          }
+        ]
+      },
+      {
+        "id": "W62",
+        "name": "U1_ADC1(P4)3 → C_+",
+        "net": "P43",
+        "layer": "top",
+        "style": "solid",
+        "color": "#60a5fa",
+        "route": [
+          {
+            "col": 9,
+            "row": 16
+          },
+          {
+            "col": 9,
+            "row": 17
+          }
+        ]
+      },
+      {
+        "id": "W63",
+        "name": "J_AUDIO_OUT_L → R/C_1",
+        "net": "L",
+        "layer": "top",
+        "style": "solid",
+        "color": "#10b981",
+        "route": [
+          {
+            "col": 0,
+            "row": 19
+          },
+          {
+            "col": 1,
+            "row": 19
+          }
+        ]
+      },
+      {
+        "id": "W64",
+        "name": "J_AUDIO_OUT_R → R/C_1",
+        "net": "R",
+        "layer": "top",
+        "style": "solid",
+        "color": "#10b981",
+        "route": [
+          {
+            "col": 0,
+            "row": 20
+          },
+          {
+            "col": 1,
+            "row": 20
+          }
+        ]
+      },
+      {
+        "id": "W65",
+        "name": "R/C_2 → C_-",
+        "net": "2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 2,
+            "row": 19
+          },
+          {
+            "col": 8,
+            "row": 19
+          },
+          {
+            "col": 8,
+            "row": 18
+          }
+        ]
+      },
+      {
+        "id": "W66",
+        "name": "R/C_2 → C_-",
+        "net": "2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 2,
+            "row": 20
+          },
+          {
+            "col": 9,
+            "row": 20
+          },
+          {
+            "col": 9,
+            "row": 18
+          }
+        ]
+      },
+      {
+        "id": "W67",
+        "name": "R/C_1 → C_2",
+        "net": "1",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 1,
+            "row": 19
+          },
+          {
+            "col": 1,
+            "row": 18
+          }
+        ]
+      },
+      {
+        "id": "W68",
+        "name": "C_1 → R/C_1",
+        "net": "1",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 1,
+            "row": 21
+          },
+          {
+            "col": 1,
+            "row": 20
+          }
+        ]
+      },
+      {
+        "id": "W69",
+        "name": "C_2 → Hole 1,22",
+        "net": "GND",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 1,
+            "row": 22
+          },
+          {
+            "col": 0,
+            "row": 22
+          }
+        ]
+      },
+      {
+        "id": "W70",
+        "name": "C_1 → Hole 1,13",
+        "net": "1",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 1,
+            "row": 17
+          },
+          {
+            "col": 0,
+            "row": 17
+          },
+          {
+            "col": 0,
+            "row": 13
+          }
+        ]
+      },
+      {
+        "id": "W72",
+        "name": "J_AUDIO_IN_GND → Hole 1,13",
+        "net": "GND",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 0,
+            "row": 6
+          },
+          {
+            "col": 0,
+            "row": 13
+          }
+        ]
+      },
+      {
+        "id": "W73",
+        "name": "Hole 22,6 → C_1",
+        "net": "3.3V",
+        "layer": "top",
+        "style": "solid",
+        "color": "#22c55e",
+        "route": [
+          {
+            "col": 21,
+            "row": 6
+          },
+          {
+            "col": 22,
+            "row": 6
+          }
+        ]
+      },
+      {
+        "id": "W74",
+        "name": "Hole 22,5 → C_1",
+        "net": "3.3V",
+        "layer": "top",
+        "style": "solid",
+        "color": "#22c55e",
+        "route": [
+          {
+            "col": 21,
+            "row": 5
+          },
+          {
+            "col": 22,
+            "row": 5
+          }
+        ]
+      },
+      {
+        "id": "W75",
+        "name": "C_2 → C_2",
+        "net": "2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#0a0a0a",
+        "route": [
+          {
+            "col": 23,
+            "row": 5
+          },
+          {
+            "col": 23,
+            "row": 6
+          }
+        ]
+      },
+      {
+        "id": "W76",
+        "name": "C_2 → C_2",
+        "net": "2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 23,
+            "row": 6
+          },
+          {
+            "col": 23,
+            "row": 7
+          }
+        ]
+      },
+      {
+        "id": "W84",
+        "name": "C_- → Hole 1,16",
+        "net": "-",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 1,
+            "row": 16
+          },
+          {
+            "col": 0,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W4",
+        "name": "U1_ADC_RES(P3) → R_ADC_RES.1",
+        "net": "P3",
+        "layer": "top",
+        "style": "solid",
+        "color": "#60a5fa",
+        "route": [
+          {
+            "col": 6,
+            "row": 9
+          },
+          {
+            "col": 6,
+            "row": 10
+          }
+        ]
+      },
+      {
+        "id": "W24",
+        "name": "Hole 5,11 → R_ADC_RES.2",
+        "net": "P1",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 4,
+            "row": 11
+          },
+          {
+            "col": 6,
+            "row": 11
+          }
+        ]
+      },
+      {
+        "id": "W25",
+        "name": "R_ADC_RES.2 → Hole 10,11",
+        "net": "2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 6,
+            "row": 11
+          },
+          {
+            "col": 9,
+            "row": 11
+          }
+        ]
+      },
+      {
+        "id": "W87",
+        "name": "Hole 10,11 → Hole 11,11",
+        "net": "2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 9,
+            "row": 11
+          },
+          {
+            "col": 10,
+            "row": 11
+          }
+        ]
+      },
+      {
+        "id": "W88",
+        "name": "Hole 11,11 → Hole 16,11",
+        "net": "2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 10,
+            "row": 11
+          },
+          {
+            "col": 15,
+            "row": 11
+          }
+        ]
+      },
+      {
+        "id": "W43",
+        "name": "U1_ADC_RES(P3)9 → Hole 17,14",
+        "net": "P39",
+        "layer": "top",
+        "style": "solid",
+        "color": "#14ff00",
+        "route": [
+          {
+            "col": 13,
+            "row": 16
+          },
+          {
+            "col": 13,
+            "row": 14
+          },
+          {
+            "col": 16,
+            "row": 14
+          }
+        ]
+      },
+      {
+        "id": "W90",
+        "name": "U1_ADC1(P4)0 → C_1",
+        "net": "P40",
+        "layer": "top",
+        "style": "solid",
+        "color": "#60a5fa",
+        "route": [
+          {
+            "col": 12,
+            "row": 16
+          },
+          {
+            "col": 12,
+            "row": 17
+          },
+          {
+            "col": 13,
+            "row": 17
+          },
+          {
+            "col": 13,
+            "row": 18
+          }
+        ]
+      },
+      {
+        "id": "W91",
+        "name": "Hole 15,17 → Hole 14,17",
+        "net": "P40",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 14,
+            "row": 17
+          },
+          {
+            "col": 13,
+            "row": 17
+          }
+        ]
+      },
+      {
+        "id": "W92",
+        "name": "U1_ADC1(P4)1 → C_1",
+        "net": "P41",
+        "layer": "top",
+        "style": "solid",
+        "color": "#60a5fa",
+        "route": [
+          {
+            "col": 11,
+            "row": 16
+          },
+          {
+            "col": 11,
+            "row": 18
+          }
+        ]
+      },
+      {
+        "id": "W93",
+        "name": "C_1 → C_+",
+        "net": "1",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 11,
+            "row": 18
+          },
+          {
+            "col": 12,
+            "row": 18
+          }
+        ]
+      },
+      {
+        "id": "W94",
+        "name": "Hole 15,17 → C_+",
+        "net": "P40",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 14,
+            "row": 17
+          },
+          {
+            "col": 14,
+            "row": 18
+          }
+        ]
+      },
+      {
+        "id": "W95",
+        "name": "U1_ADC1(P4)2 → C_2",
+        "net": "P42",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 10,
+            "row": 16
+          },
+          {
+            "col": 10,
+            "row": 19
+          },
+          {
+            "col": 11,
+            "row": 19
+          }
+        ]
+      },
+      {
+        "id": "W96",
+        "name": "C_2 → C_-",
+        "net": "2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 11,
+            "row": 19
+          },
+          {
+            "col": 12,
+            "row": 19
+          }
+        ]
+      },
+      {
+        "id": "W97",
+        "name": "C_- → C_2",
+        "net": "-",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 12,
+            "row": 19
+          },
+          {
+            "col": 13,
+            "row": 19
+          }
+        ]
+      },
+      {
+        "id": "W98",
+        "name": "C_2 → C_-",
+        "net": "2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 13,
+            "row": 19
+          },
+          {
+            "col": 14,
+            "row": 19
+          }
+        ]
+      },
+      {
+        "id": "W99",
+        "name": "C_- → U1_ADC_RES(P3)7",
+        "net": "-",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 14,
+            "row": 19
+          },
+          {
+            "col": 15,
+            "row": 19
+          },
+          {
+            "col": 15,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W100",
+        "name": "Hole 16,18 → Hole 16,17",
+        "net": "-",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 15,
+            "row": 18
+          },
+          {
+            "col": 15,
+            "row": 17
+          }
+        ]
+      },
+      {
+        "id": "W101",
+        "name": "U1_ADC_RES(P3)5 → C_1",
+        "net": "P35",
+        "layer": "top",
+        "style": "solid",
+        "color": "#d946ef",
+        "route": [
+          {
+            "col": 17,
+            "row": 16
+          },
+          {
+            "col": 17,
+            "row": 17
+          }
+        ]
+      },
+      {
+        "id": "W102",
+        "name": "C_1 → C_2",
+        "net": "1",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 17,
+            "row": 17
+          },
+          {
+            "col": 17,
+            "row": 19
+          }
+        ]
+      },
+      {
+        "id": "W103",
+        "name": "C_2 → U1_ADC_RES(P3)4",
+        "net": "2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#60a5fa",
+        "route": [
+          {
+            "col": 18,
+            "row": 17
+          },
+          {
+            "col": 18,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W104",
+        "name": "R/C_1 → U1_ADC_RES(P3)6",
+        "net": "1",
+        "layer": "top",
+        "style": "solid",
+        "color": "#60a5fa",
+        "route": [
+          {
+            "col": 16,
+            "row": 17
+          },
+          {
+            "col": 16,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W105",
+        "name": "R/C_2 → C_1",
+        "net": "2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 16,
+            "row": 18
+          },
+          {
+            "col": 16,
+            "row": 19
+          }
+        ]
+      },
+      {
+        "id": "W106",
+        "name": "Hole 11,14 → Hole 14,14",
+        "net": "P36",
+        "layer": "top",
+        "style": "solid",
+        "color": "#14ff00",
+        "route": [
+          {
+            "col": 10,
+            "row": 14
+          },
+          {
+            "col": 13,
+            "row": 14
+          }
+        ]
+      },
+      {
+        "id": "W107",
+        "name": "Hole 1,24 → Hole 21,24",
+        "net": "GND",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 0,
+            "row": 24
+          },
+          {
+            "col": 20,
+            "row": 24
+          }
+        ]
+      },
+      {
+        "id": "W109",
+        "name": "Hole 22,24 → Hole 31,24",
+        "net": "GND",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 21,
+            "row": 24
+          },
+          {
+            "col": 30,
+            "row": 24
+          }
+        ]
+      },
+      {
+        "id": "W110",
+        "name": "U1_ADC0(P2)5 → Hole 31,16",
+        "net": "P25",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 27,
+            "row": 16
+          },
+          {
+            "col": 30,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W111",
+        "name": "Hole 31,16 → Hole 31,24",
+        "net": "P25",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 30,
+            "row": 16
+          },
+          {
+            "col": 30,
+            "row": 24
+          }
+        ]
+      },
+      {
+        "id": "W71",
+        "name": "Hole 5,11 → Hole 1,11",
+        "net": "GND",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 4,
+            "row": 11
+          },
+          {
+            "col": 0,
+            "row": 11
+          }
+        ]
+      },
+      {
+        "id": "W113",
+        "name": "C_2 → Hole 12,24",
+        "net": "GND",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 11,
+            "row": 19
+          },
+          {
+            "col": 11,
+            "row": 24
+          }
+        ]
+      },
+      {
+        "id": "W114",
+        "name": "C_- → Hole 15,24",
+        "net": "GND",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 14,
+            "row": 19
+          },
+          {
+            "col": 14,
+            "row": 24
+          }
+        ]
+      },
+      {
+        "id": "W115",
+        "name": "U1_ADDR0(P7) → Hole 11,1",
+        "net": "P7",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 10,
+            "row": 9
+          },
+          {
+            "col": 10,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "id": "W116",
+        "name": "Hole 1,7 → Hole 1,1",
+        "net": "NET",
+        "layer": "bottom",
+        "style": "dashed",
+        "color": "#94a3b8",
+        "route": [
+          {
+            "col": 0,
+            "row": 7
+          },
+          {
+            "col": 0,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "id": "W117",
+        "name": "Hole 1,11 → Hole 1,7",
+        "net": "NET",
+        "layer": "bottom",
+        "style": "dashed",
+        "color": "#94a3b8",
+        "route": [
+          {
+            "col": 0,
+            "row": 11
+          },
+          {
+            "col": 0,
+            "row": 7
+          }
+        ]
+      },
+      {
+        "id": "W118",
+        "name": "Hole 1,17 → J_AUDIO_OUT_GND",
+        "net": "GND",
+        "layer": "bottom",
+        "style": "dashed",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 0,
+            "row": 17
+          },
+          {
+            "col": 0,
+            "row": 21
+          }
+        ]
+      },
+      {
+        "id": "W119",
+        "name": "GND insulated jumper: DGND bus → J_CTRL_GND",
+        "net": "GND",
+        "layer": "bottom",
+        "style": "dashed",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 30,
+            "row": 16
+          },
+          {
+            "col": 30,
+            "row": 16
+          },
+          {
+            "col": 30,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W121",
+        "name": "Hole 16,15 → Hole 16,11",
+        "net": "NET",
+        "layer": "bottom",
+        "style": "dashed",
+        "color": "#94a3b8",
+        "route": [
+          {
+            "col": 15,
+            "row": 15
+          },
+          {
+            "col": 15,
+            "row": 11
+          }
+        ]
+      },
+      {
+        "id": "W1",
+        "name": "Hole 21,10 → Hole 16,11",
+        "net": "P12",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 20,
+            "row": 10
+          },
+          {
+            "col": 20,
+            "row": 11
+          },
+          {
+            "col": 15,
+            "row": 11
+          }
+        ]
+      },
+      {
+        "id": "W122",
+        "name": "R/C_2 → Hole 22,11",
+        "net": "2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#14ff00",
+        "route": [
+          {
+            "col": 22,
+            "row": 11
+          },
+          {
+            "col": 21,
+            "row": 11
+          }
+        ]
+      },
+      {
+        "id": "W123",
+        "name": "Hole 21,10 → U1_AGND(P1)7",
+        "net": "P12",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 20,
+            "row": 10
+          },
+          {
+            "col": 20,
+            "row": 9
+          }
+        ]
+      },
+      {
+        "id": "W124",
+        "name": "U1_ADC0(P2)1 → Hole 24,11",
+        "net": "P21",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 24,
+            "row": 9
+          },
+          {
+            "col": 24,
+            "row": 11
+          },
+          {
+            "col": 23,
+            "row": 11
+          }
+        ]
+      },
+      {
+        "id": "W86",
+        "name": "U1_ADC1(P4)7 → C_+",
+        "net": "P47",
+        "layer": "top",
+        "style": "solid",
+        "color": "#60a5fa",
+        "route": [
+          {
+            "col": 5,
+            "row": 16
+          },
+          {
+            "col": 5,
+            "row": 17
+          },
+          {
+            "col": 3,
+            "row": 17
+          },
+          {
+            "col": 3,
+            "row": 16
+          },
+          {
+            "col": 2,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W83",
+        "name": "C_1 → Hole 1,15",
+        "net": "1",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 1,
+            "row": 15
+          },
+          {
+            "col": 0,
+            "row": 15
+          }
+        ]
+      },
+      {
+        "id": "W85",
+        "name": "C_2 → Hole 4,16",
+        "net": "2",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 2,
+            "row": 15
+          },
+          {
+            "col": 3,
+            "row": 15
+          },
+          {
+            "col": 3,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W57",
+        "name": "W57",
+        "net": "W57",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 2,
+            "row": 5
+          },
+          {
+            "col": 5,
+            "row": 5
+          }
+        ]
+      },
+      {
+        "id": "W58",
+        "name": "W58",
+        "net": "W58",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 5,
+            "row": 7
+          },
+          {
+            "col": 5,
+            "row": 5
+          }
+        ]
+      },
+      {
+        "id": "W59",
+        "name": "W59",
+        "net": "W59",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 7,
+            "row": 7
+          },
+          {
+            "col": 7,
+            "row": 4
+          }
+        ]
+      },
+      {
+        "id": "W60",
+        "name": "W60",
+        "net": "W60",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 7,
+            "row": 4
+          },
+          {
+            "col": 2,
+            "row": 4
+          }
+        ]
+      },
+      {
+        "id": "W125",
+        "name": "W125",
+        "net": "W125",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 1,
+            "row": 4
+          },
+          {
+            "col": 0,
+            "row": 4
+          }
+        ]
+      },
+      {
+        "id": "W126",
+        "name": "W126",
+        "net": "W126",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 1,
+            "row": 5
+          },
+          {
+            "col": 0,
+            "row": 5
+          }
+        ]
+      },
+      {
+        "id": "W127",
+        "name": "W127",
+        "net": "W127",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 15,
+            "row": 9
+          },
+          {
+            "col": 15,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "id": "W8",
+        "name": "W8",
+        "net": "W8",
+        "layer": "bottom",
+        "style": "dashed",
+        "color": "#94a3b8",
+        "route": [
+          {
+            "col": 10,
+            "row": 16
+          },
+          {
+            "col": 10,
+            "row": 11
+          }
+        ]
+      },
+      {
+        "id": "W42",
+        "name": "W42",
+        "net": "W42",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 20,
+            "row": 24
+          },
+          {
+            "col": 21,
+            "row": 24
+          }
+        ]
+      },
+      {
+        "id": "W44",
+        "name": "W44",
+        "net": "W44",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 20,
+            "row": 23
+          },
+          {
+            "col": 20,
+            "row": 24
+          }
+        ]
+      },
+      {
+        "id": "W45",
+        "name": "W45",
+        "net": "W45",
+        "layer": "top",
+        "style": "solid",
+        "color": "#64748b",
+        "route": [
+          {
+            "col": 21,
+            "row": 23
+          },
+          {
+            "col": 21,
+            "row": 24
+          }
+        ]
+      },
+      {
+        "id": "W_ALT_DVDD_GND_L",
+        "name": "DVDD caps GND to pin12",
+        "net": "GND",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111827",
+        "route": [
+          {
+            "col": 15,
+            "row": 7
+          },
+          {
+            "col": 15,
+            "row": 9
+          }
+        ]
+      },
+      {
+        "id": "W_ALT_DVDD_1V8_L",
+        "name": "DVDD bulk to 1V8 rail",
+        "net": "1.8V",
+        "layer": "top",
+        "style": "solid",
+        "color": "#f59e0b",
+        "route": [
+          {
+            "col": 16,
+            "row": 7
+          },
+          {
+            "col": 16,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W_ALT_DVDD_1V8_R",
+        "name": "DVDD pin24 cap to 1V8",
+        "net": "1.8V",
+        "layer": "top",
+        "style": "solid",
+        "color": "#f59e0b",
+        "route": [
+          {
+            "col": 27,
+            "row": 7
+          },
+          {
+            "col": 27,
+            "row": 9
+          }
+        ]
+      },
+      {
+        "id": "W77",
+        "name": "W77",
+        "net": "W77",
+        "layer": "top",
+        "style": "solid",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 21,
+            "row": 1
+          },
+          {
+            "col": 0,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "id": "W78",
+        "name": "W78",
+        "net": "W78",
+        "layer": "bottom",
+        "style": "dashed",
+        "color": "#000000",
+        "route": [
+          {
+            "col": 28,
+            "row": 7
+          },
+          {
+            "col": 30,
+            "row": 7
+          }
+        ]
+      }
+    ],
+    "texts": [
+      {
+        "id": "T_ALT1",
+        "text": "REV5: 24.576 MHz → PLL_MODE0=HIGH, PLL_MODE1=HIGH (512×fs)",
+        "col": 1,
+        "row": 23,
+        "color": "#ffffff",
+        "size": 9
+      }
+    ],
+    "tuning3d": {
+      "pitchScale": 1,
+      "offsetX": 0,
+      "offsetZ": 0,
+      "pinOffsetX": 0,
+      "pinOffsetZ": 0,
+      "pegDiameter": 0.28,
+      "pegHeight": 0.38,
+      "showPinPegs": true,
+      "texCols": 31,
+      "texRows": 48,
+      "texOffsetX": 0,
+      "texOffsetY": 0,
+      "texRingScale": 1,
+      "texHoleScale": 1
+    },
+    "savedAt": "2026-05-30T19:34:51.269149+00:00"
+  }
+}

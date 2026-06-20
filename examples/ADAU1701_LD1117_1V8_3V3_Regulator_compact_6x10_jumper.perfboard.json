@@ -1,0 +1,814 @@
+{
+  "app": "Perfboard Editor Clean Build",
+  "savedAt": "2026-05-25T22:49:38.291Z",
+  "state": {
+    "version": "clean-1.1.0",
+    "name": "ADAU1701 LD1117 1V8 3V3 Regulator - compact 6x10 jumper 3V3 to 1V8 IN",
+    "board": {
+      "cols": 6,
+      "rows": 10,
+      "pitchPx": 22,
+      "margin": 46,
+      "holeDiameterMm": 0.9,
+      "padDiameterMm": 1.8,
+      "gridUnit": "2.54mm",
+      "platedThroughHoles": true,
+      "color": "#284969"
+    },
+    "view": {
+      "face": "top",
+      "showLabels": false,
+      "showPinNames": false,
+      "showRulers": true,
+      "showBack": true,
+      "wiresOnTop": true,
+      "theme": "dark",
+      "layoutPrintMode": "auto"
+    },
+    "components": [
+      {
+        "id": "J1",
+        "kind": "header",
+        "name": "POWER OUT",
+        "value": "1:GND 2:5V 3:1V8 4:3V3",
+        "col": 1,
+        "row": 0,
+        "rot": 0,
+        "color": "#1b8d7a",
+        "pins": [
+          {
+            "name": "GND",
+            "x": 0,
+            "y": 0,
+            "number": "1"
+          },
+          {
+            "name": "5V",
+            "x": 1,
+            "y": 0,
+            "number": "2"
+          },
+          {
+            "name": "1.8V",
+            "x": 2,
+            "y": 0,
+            "number": "3"
+          },
+          {
+            "name": "3.3V",
+            "x": 3,
+            "y": 0,
+            "number": "4"
+          }
+        ]
+      },
+      {
+        "id": "U2",
+        "kind": "ic",
+        "name": "U2 3V3",
+        "value": "LD1117-3.3 SOT-223 / TAB=OUT",
+        "col": 3,
+        "row": 9,
+        "rot": 0,
+        "color": "#22c55e",
+        "pins": [
+          {
+            "name": "GND",
+            "number": 1,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "name": "OUT",
+            "number": 2,
+            "x": 1,
+            "y": 0
+          },
+          {
+            "name": "IN",
+            "number": 3,
+            "x": 2,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "U1",
+        "kind": "ic",
+        "name": "U1 1V8",
+        "value": "LD1117-1.8 SOT-223 / TAB=OUT",
+        "col": 0,
+        "row": 9,
+        "rot": 0,
+        "color": "#f59e0b",
+        "pins": [
+          {
+            "name": "GND",
+            "number": 1,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "name": "OUT",
+            "number": 2,
+            "x": 1,
+            "y": 0
+          },
+          {
+            "name": "IN",
+            "number": 3,
+            "x": 2,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "CS1",
+        "kind": "smdCapacitor",
+        "name": "C_IN_100nF",
+        "value": "100nF ceramic 5V-GND",
+        "col": 1,
+        "row": 2,
+        "rot": 0,
+        "color": "#4aa3df",
+        "pins": [
+          {
+            "name": "GND",
+            "x": 0,
+            "y": 0,
+            "number": "1"
+          },
+          {
+            "name": "+5V",
+            "x": 1,
+            "y": 0,
+            "number": "2"
+          }
+        ]
+      },
+      {
+        "id": "CS3",
+        "kind": "smdCapacitor",
+        "name": "C_3V3_100nF",
+        "value": "100nF ceramic 3V3-GND",
+        "col": 3,
+        "row": 5,
+        "rot": 0,
+        "color": "#4aa3df",
+        "pins": [
+          {
+            "name": "GND",
+            "x": 0,
+            "y": 0,
+            "number": "1"
+          },
+          {
+            "name": "+3V3",
+            "x": 1,
+            "y": 0,
+            "number": "2"
+          }
+        ]
+      },
+      {
+        "id": "CS5",
+        "kind": "smdCapacitor",
+        "name": "C_1V8_100nF",
+        "value": "100nF ceramic 1V8-GND",
+        "col": 0,
+        "row": 5,
+        "rot": 0,
+        "color": "#4aa3df",
+        "pins": [
+          {
+            "name": "GND",
+            "x": 0,
+            "y": 0,
+            "number": "1"
+          },
+          {
+            "name": "+1V8",
+            "x": 1,
+            "y": 0,
+            "number": "2"
+          }
+        ]
+      },
+      {
+        "id": "TP1",
+        "kind": "testpad",
+        "name": "TP_3V3_OUT",
+        "value": "3V3 TAB/OUT",
+        "col": 4,
+        "row": 6,
+        "rot": 0,
+        "color": "#22c55e",
+        "pins": [
+          {
+            "name": "3V3",
+            "x": 0,
+            "y": 0,
+            "number": 1
+          }
+        ]
+      },
+      {
+        "id": "TP2",
+        "kind": "testpad",
+        "name": "TP_1V8_OUT",
+        "value": "1V8 TAB/OUT",
+        "col": 1,
+        "row": 6,
+        "rot": 0,
+        "color": "#f59e0b",
+        "pins": [
+          {
+            "name": "1V8",
+            "x": 0,
+            "y": 0,
+            "number": 1
+          }
+        ]
+      },
+      {
+        "id": "TP4",
+        "kind": "testpad",
+        "name": "TP_5V_IN",
+        "value": "5V jumper/test",
+        "col": 5,
+        "row": 2,
+        "rot": 0,
+        "color": "#ef4444",
+        "pins": [
+          {
+            "name": "5V",
+            "x": 0,
+            "y": 0,
+            "number": 1
+          }
+        ]
+      },
+      {
+        "id": "ES1",
+        "kind": "smdElectrolytic",
+        "name": "C_IN_47uF",
+        "value": "47uF electrolytic -GND / +5V",
+        "col": 1,
+        "row": 1,
+        "rot": 0,
+        "color": "#7b61ff",
+        "pins": [
+          {
+            "name": "-",
+            "x": 0,
+            "y": 0,
+            "number": 1
+          },
+          {
+            "name": "+",
+            "x": 1,
+            "y": 0,
+            "number": 2
+          }
+        ]
+      },
+      {
+        "id": "ES2",
+        "kind": "smdElectrolytic",
+        "name": "C_1V8_10uF",
+        "value": "10uF electrolytic -GND / +1V8",
+        "col": 0,
+        "row": 4,
+        "rot": 0,
+        "color": "#7b61ff",
+        "pins": [
+          {
+            "name": "-",
+            "x": 0,
+            "y": 0,
+            "number": 1
+          },
+          {
+            "name": "+",
+            "x": 1,
+            "y": 0,
+            "number": 2
+          }
+        ]
+      },
+      {
+        "id": "ES3",
+        "kind": "smdElectrolytic",
+        "name": "C_3V3_10uF",
+        "value": "10uF electrolytic -GND / +3V3",
+        "col": 3,
+        "row": 4,
+        "rot": 0,
+        "color": "#7b61ff",
+        "pins": [
+          {
+            "name": "-",
+            "x": 0,
+            "y": 0,
+            "number": 1
+          },
+          {
+            "name": "+",
+            "x": 1,
+            "y": 0,
+            "number": 2
+          }
+        ]
+      },
+      {
+        "id": "TP3",
+        "kind": "testpad",
+        "name": "TP",
+        "value": "",
+        "col": 2,
+        "row": 6,
+        "rot": 0,
+        "color": "#8affa7",
+        "pins": [
+          {
+            "name": "TP",
+            "x": 0,
+            "y": 0,
+            "number": 1
+          }
+        ]
+      }
+    ],
+    "wires": [
+      {
+        "id": "W1",
+        "name": "1V8",
+        "net": "1V8",
+        "layer": "top",
+        "style": "solid",
+        "color": "#f59e0b",
+        "route": [
+          {
+            "col": 1,
+            "row": 9
+          },
+          {
+            "col": 1,
+            "row": 6
+          }
+        ]
+      },
+      {
+        "id": "W2",
+        "name": "1V8",
+        "net": "1V8",
+        "layer": "top",
+        "style": "solid",
+        "color": "#f59e0b",
+        "route": [
+          {
+            "col": 1,
+            "row": 6
+          },
+          {
+            "col": 1,
+            "row": 5
+          }
+        ]
+      },
+      {
+        "id": "W3",
+        "name": "1V8",
+        "net": "1V8",
+        "layer": "top",
+        "style": "solid",
+        "color": "#f59e0b",
+        "route": [
+          {
+            "col": 1,
+            "row": 5
+          },
+          {
+            "col": 1,
+            "row": 4
+          }
+        ]
+      },
+      {
+        "id": "W4",
+        "name": "3V3",
+        "net": "3V3",
+        "layer": "top",
+        "style": "solid",
+        "color": "#22c55e",
+        "route": [
+          {
+            "col": 4,
+            "row": 9
+          },
+          {
+            "col": 4,
+            "row": 6
+          }
+        ]
+      },
+      {
+        "id": "W5",
+        "name": "3V3",
+        "net": "3V3",
+        "layer": "top",
+        "style": "solid",
+        "color": "#22c55e",
+        "route": [
+          {
+            "col": 4,
+            "row": 6
+          },
+          {
+            "col": 4,
+            "row": 5
+          }
+        ]
+      },
+      {
+        "id": "W6",
+        "name": "3V3",
+        "net": "3V3",
+        "layer": "top",
+        "style": "solid",
+        "color": "#22c55e",
+        "route": [
+          {
+            "col": 4,
+            "row": 5
+          },
+          {
+            "col": 4,
+            "row": 4
+          }
+        ]
+      },
+      {
+        "id": "W7",
+        "name": "3V3",
+        "net": "3V3",
+        "layer": "top",
+        "style": "solid",
+        "color": "#22c55e",
+        "route": [
+          {
+            "col": 4,
+            "row": 4
+          },
+          {
+            "col": 4,
+            "row": 0
+          }
+        ]
+      },
+      {
+        "id": "W8",
+        "name": "1V8",
+        "net": "1V8",
+        "layer": "top",
+        "style": "solid",
+        "color": "#f59e0b",
+        "route": [
+          {
+            "col": 1,
+            "row": 4
+          },
+          {
+            "col": 2,
+            "row": 4
+          }
+        ]
+      },
+      {
+        "id": "W9",
+        "name": "1V8",
+        "net": "1V8",
+        "layer": "top",
+        "style": "solid",
+        "color": "#f59e0b",
+        "route": [
+          {
+            "col": 2,
+            "row": 4
+          },
+          {
+            "col": 2,
+            "row": 3
+          }
+        ]
+      },
+      {
+        "id": "W10",
+        "name": "1V8",
+        "net": "1V8",
+        "layer": "top",
+        "style": "solid",
+        "color": "#f59e0b",
+        "route": [
+          {
+            "col": 2,
+            "row": 3
+          },
+          {
+            "col": 3,
+            "row": 3
+          }
+        ]
+      },
+      {
+        "id": "W11",
+        "name": "1V8",
+        "net": "1V8",
+        "layer": "top",
+        "style": "solid",
+        "color": "#f59e0b",
+        "route": [
+          {
+            "col": 3,
+            "row": 3
+          },
+          {
+            "col": 3,
+            "row": 0
+          }
+        ]
+      },
+      {
+        "id": "W12",
+        "name": "GND",
+        "net": "GND",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 1,
+            "row": 0
+          },
+          {
+            "col": 1,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "id": "W13",
+        "name": "GND",
+        "net": "GND",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 1,
+            "row": 1
+          },
+          {
+            "col": 1,
+            "row": 2
+          }
+        ]
+      },
+      {
+        "id": "W14",
+        "name": "5V",
+        "net": "5V",
+        "layer": "top",
+        "style": "solid",
+        "color": "#ef4444",
+        "route": [
+          {
+            "col": 2,
+            "row": 0
+          },
+          {
+            "col": 2,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "id": "W16",
+        "name": "GND",
+        "net": "GND",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 0,
+            "row": 9
+          },
+          {
+            "col": 0,
+            "row": 5
+          }
+        ]
+      },
+      {
+        "id": "W17",
+        "name": "GND",
+        "net": "GND",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 0,
+            "row": 5
+          },
+          {
+            "col": 0,
+            "row": 4
+          }
+        ]
+      },
+      {
+        "id": "W18",
+        "name": "GND",
+        "net": "GND",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 3,
+            "row": 9
+          },
+          {
+            "col": 3,
+            "row": 5
+          }
+        ]
+      },
+      {
+        "id": "W19",
+        "name": "GND",
+        "net": "GND",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 3,
+            "row": 5
+          },
+          {
+            "col": 3,
+            "row": 4
+          }
+        ]
+      },
+      {
+        "id": "W20",
+        "name": "GND",
+        "net": "GND",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 1,
+            "row": 2
+          },
+          {
+            "col": 0,
+            "row": 2
+          }
+        ]
+      },
+      {
+        "id": "W21",
+        "name": "GND",
+        "net": "GND",
+        "layer": "top",
+        "style": "solid",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 0,
+            "row": 2
+          },
+          {
+            "col": 0,
+            "row": 4
+          }
+        ]
+      },
+      {
+        "id": "W15",
+        "name": "5V",
+        "net": "5V",
+        "layer": "bottom",
+        "style": "dashed",
+        "color": "#ef4444",
+        "route": [
+          {
+            "col": 2,
+            "row": 2
+          },
+          {
+            "col": 5,
+            "row": 2
+          }
+        ]
+      },
+      {
+        "id": "W25",
+        "name": "5V",
+        "net": "5V",
+        "layer": "bottom",
+        "style": "dashed",
+        "color": "#ef4444",
+        "route": [
+          {
+            "col": 5,
+            "row": 2
+          },
+          {
+            "col": 5,
+            "row": 9
+          }
+        ]
+      },
+      {
+        "id": "W26",
+        "name": "5V",
+        "net": "5V",
+        "layer": "top",
+        "style": "solid",
+        "color": "#ef4444",
+        "route": [
+          {
+            "col": 2,
+            "row": 1
+          },
+          {
+            "col": 2,
+            "row": 2
+          }
+        ]
+      },
+      {
+        "id": "W27",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 0,
+            "row": 8
+          },
+          {
+            "col": 3,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W22",
+        "name": "W22",
+        "net": "W22",
+        "layer": "bottom",
+        "style": "dashed",
+        "color": "#64ff61",
+        "route": [
+          {
+            "col": 2,
+            "row": 9
+          },
+          {
+            "col": 2,
+            "row": 6
+          }
+        ]
+      },
+      {
+        "id": "W23",
+        "name": "W23",
+        "net": "W23",
+        "layer": "bottom",
+        "style": "dashed",
+        "color": "#64ff61",
+        "route": [
+          {
+            "col": 2,
+            "row": 6
+          },
+          {
+            "col": 4,
+            "row": 6
+          }
+        ]
+      }
+    ],
+    "texts": []
+  }
+}

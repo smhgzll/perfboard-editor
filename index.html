@@ -17,6 +17,8 @@
     <button id="saveProjectBtn">Save</button>
     <button id="saveProjectAsBtn">Save As</button>
     <button id="backupProjectBtn">Backup</button>
+    <button id="undoBtn" title="Undo (Ctrl+Z)">↶ Undo</button>
+    <button id="redoBtn" title="Redo (Ctrl+Shift+Z)">↷ Redo</button>
     <span class="divider"></span>
     <button id="printSchematicBtn">Scheme</button>
     <button id="printLayoutBtn">Layout</button>
@@ -49,8 +51,15 @@
         <h2>Components</h2>
         <div class="palette-list">
           <button data-place="resistor">Resistor</button>
+          <button data-place="resistorAxial3">Axial resistor / 3-hole</button>
+          <button data-place="resistorAxial5">Metal film resistor / 5-hole</button>
+          <button data-place="resistorVertical">Vertical resistor / 2-hole</button>
           <button data-place="capacitor">Capacitor</button>
+          <button data-place="ceramicCapacitor2">Ceramic cap / 2-hole</button>
+          <button data-place="capacitorRadial3">Radial cap / 3-hole</button>
+          <button data-place="filmCapacitor5">Film cap / 5-hole</button>
           <button data-place="electrolytic">Electrolytic</button>
+          <button data-place="electrolyticRadial2">Radial electrolytic / 2-hole</button>
           <button data-place="led">LED</button>
           <button data-place="crystal">Crystal</button>
           <button data-place="smdResistor">SMD Resistor / 2-hole</button>
@@ -58,9 +67,25 @@
           <button data-place="smdElectrolytic">SMD Electrolytic / 2-hole</button>
           <button data-place="smdLed">SMD LED / 2-hole</button>
           <button data-place="ic">IC / DIP</button>
+          <button data-place="dip8">DIP-8</button>
+          <button data-place="dip14">DIP-14</button>
+          <button data-place="dip16">DIP-16</button>
+          <button data-place="dip28">DIP-28</button>
           <button data-place="header">Header</button>
+          <button data-place="screwTerminal2">Screw terminal 2P</button>
+          <button data-place="screwTerminal3">Screw terminal 3P</button>
           <button data-place="jackpads">Jack pads</button>
+          <button data-place="diode">Diode</button>
+          <button data-place="diodeAxial4">Axial diode / 4-hole</button>
+          <button data-place="inductorAxial5">Axial inductor / 5-hole</button>
+          <button data-place="transistor">Transistor TO-92</button>
+          <button data-place="potentiometer">Potentiometer</button>
+          <button data-place="trimpot">Trimpot</button>
+          <button data-place="regulatorTo220">TO-220 Regulator</button>
+          <button data-place="tactSwitch">Tact switch 6x6</button>
           <button data-place="testpad">Test pad</button>
+          <button id="customComponentBtn" type="button">Custom component…</button>
+          <div id="customTemplatePalette" class="custom-template-palette"></div>
         </div>
       </section>
 
@@ -74,6 +99,11 @@
           <label>Pad Ø mm <input id="padDiameter" type="number" step="0.1" min="0.2" /></label>
           <label>Unit <input id="gridUnit" /></label>
           <label>Color <input id="boardColor" type="color" /></label>
+          <label>Label font <input id="labelFontSize" type="number" step="0.5" min="4" max="18" /></label>
+          <label>Pin font <input id="pinFontSize" type="number" step="0.5" min="3" max="14" /></label>
+          <label>Label wrap <input id="labelWrapChars" type="number" min="8" max="48" /></label>
+          <label>Edge coords <select id="coordMode"><option value="numbersTopLettersSide">Top numbers / side letters</option><option value="lettersTopNumbersSide">Top letters / side numbers</option></select></label>
+          <label class="check-row"><input id="coordLabels" type="checkbox" /> Edge labels</label>
           <label class="check-row"><input id="pthMode" type="checkbox" /> PTH holes</label>
           <button id="applyBoardBtn" class="wide">Apply board</button>
         </div>
@@ -94,18 +124,29 @@
 
     <main class="workspace">
       <svg id="editorSvg" tabindex="0" aria-label="Perfboard editor canvas"></svg>
+      <div id="editorRulerTop" class="editor-ruler editor-ruler-top" aria-hidden="true"></div>
+      <div id="editorRulerLeft" class="editor-ruler editor-ruler-left" aria-hidden="true"></div>
+      <div id="miniMap" class="mini-map" aria-hidden="true">
+        <button id="miniMapToggleBtn" class="mini-map-toggle" title="Mini map aç/kapat" aria-label="Mini map aç/kapat">−</button>
+        <canvas id="miniMapCanvas" width="120" height="80"></canvas>
+        <span>map</span>
+      </div>
+      <div id="fixedSelectionLabel" class="fixed-selection-label is-empty"></div>
       <div class="floating-layer-controls" aria-label="Layer view">
         <button class="face-btn is-active" data-face="top">Top</button>
         <button class="face-btn" data-face="bottom">Bottom</button>
         <button class="face-btn" data-face="both">Both</button>
       </div>
       <div class="floating-controls">
-        <button id="zoomOutBtn">−</button>
+        <button id="zoomOutBtn" title="Zoom out">−</button>
         <span id="zoomText">100%</span>
-        <button id="zoomInBtn">+</button>
-        <button id="zoomResetBtn">Reset</button>
+        <button id="zoomInBtn" title="Zoom in">+</button>
+        <button id="zoomResetBtn" title="Reset zoom">Reset</button>
+        <button id="centerBoardBtn" title="Center board">Center</button>
+        <button id="fullscreenViewBtn" title="View-only fullscreen">Fullscreen</button>
       </div>
       <div id="statusBar" class="status-bar is-empty"></div>
+      <div id="contextMenu" class="context-menu hidden" role="menu"></div>
     </main>
 
     <aside class="side-panel right-panel">
@@ -126,6 +167,10 @@
       <section class="panel-section">
         <h2>Wires</h2>
         <div id="wireList" class="object-list"></div>
+      </section>
+      <section class="panel-section">
+        <h2>History</h2>
+        <div id="historyList" class="history-list"></div>
       </section>
       <section class="panel-section">
         <h2>Checks</h2>
