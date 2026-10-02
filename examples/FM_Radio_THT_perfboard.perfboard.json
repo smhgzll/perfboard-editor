@@ -1,0 +1,2857 @@
+{
+  "app": "Perfboard Editor",
+  "savedAt": "2026-10-02T18:30:50.200180Z",
+  "state": {
+    "version": "1.4.0",
+    "name": "FM Radio - hand sketch transcription - THT",
+    "board": {
+      "type": "perfboard",
+      "stripDirection": "horizontal",
+      "cuts": [],
+      "cols": 44,
+      "rows": 18,
+      "pitchPx": 22,
+      "margin": 46,
+      "holeDiameterMm": 0.9,
+      "padDiameterMm": 1.8,
+      "gridUnit": "2.54mm",
+      "platedThroughHoles": true,
+      "color": "#284969",
+      "coordinateLabels": true,
+      "coordinateMode": "numbersTopLettersSide"
+    },
+    "view": {
+      "face": "both",
+      "showLabels": true,
+      "showPinNames": false,
+      "showRulers": true,
+      "showBack": true,
+      "wiresOnTop": true,
+      "showGuides": true,
+      "theme": "dark",
+      "layoutPrintMode": "separate",
+      "labelFontSize": 8.0,
+      "pinFontSize": 6.0,
+      "labelWrapChars": 18
+    },
+    "components": [
+      {
+        "id": "J1",
+        "kind": "header",
+        "name": "J_ANT",
+        "value": "ANT / GND",
+        "col": 0,
+        "row": 7,
+        "rot": 0,
+        "side": "top",
+        "color": "#d7dce4",
+        "pins": [
+          {
+            "name": "ANT",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "ANT"
+          },
+          {
+            "name": "GND",
+            "x": 0,
+            "y": 2,
+            "number": 2,
+            "net": "GND"
+          }
+        ],
+        "pinned": false,
+        "w": 1,
+        "h": 3,
+        "bodyW": 1,
+        "bodyH": 3
+      },
+      {
+        "id": "J2",
+        "kind": "header",
+        "name": "J_PWR",
+        "value": "+9V / GND",
+        "col": 42,
+        "row": 1,
+        "rot": 0,
+        "side": "top",
+        "color": "#d7dce4",
+        "pins": [
+          {
+            "name": "+9V",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "9V"
+          },
+          {
+            "name": "GND",
+            "x": 0,
+            "y": 2,
+            "number": 2,
+            "net": "GND"
+          }
+        ],
+        "pinned": false,
+        "w": 1,
+        "h": 3,
+        "bodyW": 1,
+        "bodyH": 3
+      },
+      {
+        "id": "J3",
+        "kind": "header",
+        "name": "J_AUDIO",
+        "value": "AUDIO / GND",
+        "col": 43,
+        "row": 7,
+        "rot": 0,
+        "side": "top",
+        "color": "#d7dce4",
+        "pins": [
+          {
+            "name": "AUDIO",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "AUDIO_OUT"
+          },
+          {
+            "name": "GND",
+            "x": 0,
+            "y": 2,
+            "number": 2,
+            "net": "GND"
+          }
+        ],
+        "pinned": false,
+        "w": 1,
+        "h": 3,
+        "bodyW": 1,
+        "bodyH": 3
+      },
+      {
+        "id": "Q1",
+        "kind": "transistor",
+        "name": "Q1",
+        "value": "NPN TO-92 / pinout verify",
+        "col": 5,
+        "row": 7,
+        "rot": 0,
+        "side": "top",
+        "color": "#0f172a",
+        "pins": [
+          {
+            "name": "E",
+            "x": 0,
+            "y": 1,
+            "number": 1,
+            "net": "Q1_E"
+          },
+          {
+            "name": "B",
+            "x": 1,
+            "y": 0,
+            "number": 2,
+            "net": "Q1_B"
+          },
+          {
+            "name": "C",
+            "x": 2,
+            "y": 1,
+            "number": 3,
+            "net": "Q1_C"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "Q2",
+        "kind": "transistor",
+        "name": "Q2",
+        "value": "NPN TO-92 / pinout verify",
+        "col": 14,
+        "row": 7,
+        "rot": 0,
+        "side": "top",
+        "color": "#0f172a",
+        "pins": [
+          {
+            "name": "E",
+            "x": 0,
+            "y": 1,
+            "number": 1,
+            "net": "Q2_E"
+          },
+          {
+            "name": "B",
+            "x": 1,
+            "y": 0,
+            "number": 2,
+            "net": "Q2_B"
+          },
+          {
+            "name": "C",
+            "x": 2,
+            "y": 1,
+            "number": 3,
+            "net": "Q2_C"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "Q3",
+        "kind": "transistor",
+        "name": "Q3",
+        "value": "NPN TO-92 / pinout verify",
+        "col": 23,
+        "row": 7,
+        "rot": 0,
+        "side": "top",
+        "color": "#0f172a",
+        "pins": [
+          {
+            "name": "E",
+            "x": 0,
+            "y": 1,
+            "number": 1,
+            "net": "Q3_E"
+          },
+          {
+            "name": "B",
+            "x": 1,
+            "y": 0,
+            "number": 2,
+            "net": "Q3_B"
+          },
+          {
+            "name": "C",
+            "x": 2,
+            "y": 1,
+            "number": 3,
+            "net": "Q3_C"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "Q4",
+        "kind": "transistor",
+        "name": "Q4",
+        "value": "NPN TO-92 / pinout verify",
+        "col": 32,
+        "row": 7,
+        "rot": 0,
+        "side": "top",
+        "color": "#0f172a",
+        "pins": [
+          {
+            "name": "E",
+            "x": 0,
+            "y": 1,
+            "number": 1,
+            "net": "Q4_E"
+          },
+          {
+            "name": "B",
+            "x": 1,
+            "y": 0,
+            "number": 2,
+            "net": "Q4_B"
+          },
+          {
+            "name": "C",
+            "x": 2,
+            "y": 1,
+            "number": 3,
+            "net": "Q4_C"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "C1",
+        "kind": "ceramicCapacitor2",
+        "name": "C1",
+        "value": "10 pF",
+        "col": 1,
+        "row": 7,
+        "rot": 0,
+        "side": "top",
+        "color": "#4aa3df",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "ANT"
+          },
+          {
+            "name": "2",
+            "x": 1,
+            "y": 0,
+            "number": 2,
+            "net": "Q1_B"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "R1",
+        "kind": "resistorAxial5",
+        "name": "R1",
+        "value": "10 kΩ",
+        "col": 6,
+        "row": 2,
+        "rot": 90,
+        "side": "top",
+        "color": "#b88c4a",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "9V"
+          },
+          {
+            "name": "2",
+            "x": 4,
+            "y": 0,
+            "number": 2,
+            "net": "Q1_B"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "R2",
+        "kind": "resistorAxial5",
+        "name": "R2",
+        "value": "2.2 kΩ",
+        "col": 3,
+        "row": 10,
+        "rot": 90,
+        "side": "top",
+        "color": "#b88c4a",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "Q1_B"
+          },
+          {
+            "name": "2",
+            "x": 4,
+            "y": 0,
+            "number": 2,
+            "net": "GND"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "C2",
+        "kind": "ceramicCapacitor2",
+        "name": "C2",
+        "value": "1 nF",
+        "col": 4,
+        "row": 11,
+        "rot": 90,
+        "side": "top",
+        "color": "#4aa3df",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "Q1_B"
+          },
+          {
+            "name": "2",
+            "x": 1,
+            "y": 0,
+            "number": 2,
+            "net": "GND"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "L1",
+        "kind": "inductorAxial5",
+        "name": "L1",
+        "value": "5 turns Ø5 mm (sketch also notes 100 µH)",
+        "col": 8,
+        "row": 2,
+        "rot": 90,
+        "side": "top",
+        "color": "#a3e635",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "9V"
+          },
+          {
+            "name": "2",
+            "x": 4,
+            "y": 0,
+            "number": 2,
+            "net": "Q1_C"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "R3",
+        "kind": "resistorAxial3",
+        "name": "R3",
+        "value": "220 Ω",
+        "col": 5,
+        "row": 10,
+        "rot": 90,
+        "side": "top",
+        "color": "#b88c4a",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "Q1_E"
+          },
+          {
+            "name": "2",
+            "x": 2,
+            "y": 0,
+            "number": 2,
+            "net": "GND"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "C3",
+        "kind": "electrolyticRadial2",
+        "name": "C3",
+        "value": "1 µF",
+        "col": 7,
+        "row": 10,
+        "rot": 90,
+        "side": "top",
+        "color": "#7b61ff",
+        "pins": [
+          {
+            "name": "+",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "Q1_E"
+          },
+          {
+            "name": "-",
+            "x": 1,
+            "y": 0,
+            "number": 2,
+            "net": "GND"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "C4",
+        "kind": "filmCapacitor5",
+        "name": "C4",
+        "value": "10 nF",
+        "col": 9,
+        "row": 8,
+        "rot": 0,
+        "side": "top",
+        "color": "#38bdf8",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "Q1_C"
+          },
+          {
+            "name": "2",
+            "x": 4,
+            "y": 0,
+            "number": 2,
+            "net": "Q2_B"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "R4",
+        "kind": "resistorAxial5",
+        "name": "R4",
+        "value": "47 kΩ",
+        "col": 15,
+        "row": 2,
+        "rot": 90,
+        "side": "top",
+        "color": "#b88c4a",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "9V"
+          },
+          {
+            "name": "2",
+            "x": 4,
+            "y": 0,
+            "number": 2,
+            "net": "Q2_B"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "R5",
+        "kind": "resistorAxial5",
+        "name": "R5",
+        "value": "10 kΩ",
+        "col": 12,
+        "row": 10,
+        "rot": 90,
+        "side": "top",
+        "color": "#b88c4a",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "Q2_B"
+          },
+          {
+            "name": "2",
+            "x": 4,
+            "y": 0,
+            "number": 2,
+            "net": "GND"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "R6",
+        "kind": "resistorAxial3",
+        "name": "R6",
+        "value": "330 Ω",
+        "col": 14,
+        "row": 10,
+        "rot": 90,
+        "side": "top",
+        "color": "#b88c4a",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "Q2_E"
+          },
+          {
+            "name": "2",
+            "x": 2,
+            "y": 0,
+            "number": 2,
+            "net": "GND"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "L2",
+        "kind": "inductorAxial5",
+        "name": "L2",
+        "value": "22 µH",
+        "col": 17,
+        "row": 2,
+        "rot": 90,
+        "side": "top",
+        "color": "#a3e635",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "9V"
+          },
+          {
+            "name": "2",
+            "x": 4,
+            "y": 0,
+            "number": 2,
+            "net": "Q2_C"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "C5",
+        "kind": "ceramicCapacitor2",
+        "name": "C5",
+        "value": "10 pF",
+        "col": 18,
+        "row": 8,
+        "rot": 0,
+        "side": "top",
+        "color": "#4aa3df",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "Q2_C"
+          },
+          {
+            "name": "2",
+            "x": 1,
+            "y": 0,
+            "number": 2,
+            "net": "TUNE"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "R7",
+        "kind": "resistorAxial3",
+        "name": "R7",
+        "value": "22 kΩ",
+        "col": 19,
+        "row": 10,
+        "rot": 90,
+        "side": "top",
+        "color": "#b88c4a",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "Q2_C"
+          },
+          {
+            "name": "2",
+            "x": 2,
+            "y": 0,
+            "number": 2,
+            "net": "TUNE"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "L3",
+        "kind": "inductorAxial5",
+        "name": "L3",
+        "value": "4 turns Ø5 mm",
+        "col": 21,
+        "row": 11,
+        "rot": 90,
+        "side": "top",
+        "color": "#a3e635",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "TUNE"
+          },
+          {
+            "name": "2",
+            "x": 4,
+            "y": 0,
+            "number": 2,
+            "net": "GND"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "C6",
+        "kind": "capacitorRadial3",
+        "name": "C6",
+        "value": "Trimmer 5–30 pF",
+        "col": 22,
+        "row": 11,
+        "rot": 90,
+        "side": "top",
+        "color": "#4aa3df",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "TUNE"
+          },
+          {
+            "name": "2",
+            "x": 2,
+            "y": 0,
+            "number": 2,
+            "net": "GND"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "C7",
+        "kind": "ceramicCapacitor2",
+        "name": "C7",
+        "value": "4.7 pF",
+        "col": 21,
+        "row": 7,
+        "rot": 0,
+        "side": "top",
+        "color": "#4aa3df",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "TUNE"
+          },
+          {
+            "name": "2",
+            "x": 1,
+            "y": 0,
+            "number": 2,
+            "net": "Q3_B"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "R8",
+        "kind": "resistorAxial5",
+        "name": "R8",
+        "value": "10 kΩ",
+        "col": 24,
+        "row": 10,
+        "rot": 90,
+        "side": "top",
+        "color": "#b88c4a",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "Q3_B"
+          },
+          {
+            "name": "2",
+            "x": 4,
+            "y": 0,
+            "number": 2,
+            "net": "GND"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "R9",
+        "kind": "resistorAxial3",
+        "name": "R9",
+        "value": "1 kΩ",
+        "col": 23,
+        "row": 10,
+        "rot": 90,
+        "side": "top",
+        "color": "#b88c4a",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "Q3_E"
+          },
+          {
+            "name": "2",
+            "x": 2,
+            "y": 0,
+            "number": 2,
+            "net": "GND"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "Y1",
+        "kind": "crystal",
+        "name": "IF1",
+        "value": "10.7 MHz IF resonator (2-pin sketch)",
+        "col": 26,
+        "row": 3,
+        "rot": 90,
+        "side": "top",
+        "color": "#b9c0c8",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "9V"
+          },
+          {
+            "name": "2",
+            "x": 2,
+            "y": 0,
+            "number": 2,
+            "net": "Q3_C"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "R10",
+        "kind": "resistorAxial5",
+        "name": "R10",
+        "value": "330 Ω",
+        "col": 27,
+        "row": 8,
+        "rot": 0,
+        "side": "top",
+        "color": "#b88c4a",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "Q3_C"
+          },
+          {
+            "name": "2",
+            "x": 4,
+            "y": 0,
+            "number": 2,
+            "net": "Q4_B"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "R11",
+        "kind": "resistorAxial5",
+        "name": "R11",
+        "value": "100 kΩ",
+        "col": 32,
+        "row": 2,
+        "rot": 90,
+        "side": "top",
+        "color": "#b88c4a",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "9V"
+          },
+          {
+            "name": "2",
+            "x": 4,
+            "y": 0,
+            "number": 2,
+            "net": "Q4_B"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "L4",
+        "kind": "inductorAxial5",
+        "name": "L4",
+        "value": "10 mH",
+        "col": 34,
+        "row": 2,
+        "rot": 90,
+        "side": "top",
+        "color": "#a3e635",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "9V"
+          },
+          {
+            "name": "2",
+            "x": 4,
+            "y": 0,
+            "number": 2,
+            "net": "Q4_C"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "R12",
+        "kind": "resistorAxial3",
+        "name": "R12",
+        "value": "470 Ω",
+        "col": 31,
+        "row": 10,
+        "rot": 90,
+        "side": "top",
+        "color": "#b88c4a",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "Q4_E"
+          },
+          {
+            "name": "2",
+            "x": 2,
+            "y": 0,
+            "number": 2,
+            "net": "GND"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "C8",
+        "kind": "ceramicCapacitor2",
+        "name": "C8",
+        "value": "10 nF",
+        "col": 33,
+        "row": 11,
+        "rot": 90,
+        "side": "top",
+        "color": "#4aa3df",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "Q4_E"
+          },
+          {
+            "name": "2",
+            "x": 1,
+            "y": 0,
+            "number": 2,
+            "net": "GND"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "C9",
+        "kind": "ceramicCapacitor2",
+        "name": "C9",
+        "value": "2–5 pF",
+        "col": 35,
+        "row": 10,
+        "rot": 0,
+        "side": "top",
+        "color": "#4aa3df",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "Q4_E"
+          },
+          {
+            "name": "2",
+            "x": 1,
+            "y": 0,
+            "number": 2,
+            "net": "DET"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "R13",
+        "kind": "resistorAxial5",
+        "name": "R13",
+        "value": "100 kΩ",
+        "col": 37,
+        "row": 9,
+        "rot": 90,
+        "side": "top",
+        "color": "#b88c4a",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "Q4_C"
+          },
+          {
+            "name": "2",
+            "x": 4,
+            "y": 0,
+            "number": 2,
+            "net": "DET"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "D1",
+        "kind": "diodeAxial4",
+        "name": "D1",
+        "value": "BB105 varicap",
+        "col": 38,
+        "row": 11,
+        "rot": 90,
+        "side": "top",
+        "color": "#2dd4bf",
+        "pins": [
+          {
+            "name": "A",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "GND"
+          },
+          {
+            "name": "K",
+            "x": 3,
+            "y": 0,
+            "number": 2,
+            "net": "DET"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "D2",
+        "kind": "diodeAxial4",
+        "name": "D2",
+        "value": "1N4148",
+        "col": 40,
+        "row": 10,
+        "rot": 90,
+        "side": "top",
+        "color": "#2dd4bf",
+        "pins": [
+          {
+            "name": "A",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "GND"
+          },
+          {
+            "name": "K",
+            "x": 3,
+            "y": 0,
+            "number": 2,
+            "net": "Q4_C"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "D3",
+        "kind": "diodeAxial4",
+        "name": "D3",
+        "value": "1N4148 (anti-parallel)",
+        "col": 41,
+        "row": 10,
+        "rot": 90,
+        "side": "top",
+        "color": "#2dd4bf",
+        "pins": [
+          {
+            "name": "A",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "Q4_C"
+          },
+          {
+            "name": "K",
+            "x": 3,
+            "y": 0,
+            "number": 2,
+            "net": "GND"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "C10",
+        "kind": "electrolyticRadial2",
+        "name": "C10",
+        "value": "1 µF output",
+        "col": 39,
+        "row": 7,
+        "rot": 0,
+        "side": "top",
+        "color": "#7b61ff",
+        "pins": [
+          {
+            "name": "+",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "Q4_C"
+          },
+          {
+            "name": "-",
+            "x": 1,
+            "y": 0,
+            "number": 2,
+            "net": "AUDIO_OUT"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "C11",
+        "kind": "electrolyticRadial2",
+        "name": "C11",
+        "value": "100 µF supply",
+        "col": 39,
+        "row": 3,
+        "rot": 90,
+        "side": "top",
+        "color": "#7b61ff",
+        "pins": [
+          {
+            "name": "+",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "9V"
+          },
+          {
+            "name": "-",
+            "x": 1,
+            "y": 0,
+            "number": 2,
+            "net": "GND"
+          }
+        ],
+        "pinned": false
+      },
+      {
+        "id": "C12",
+        "kind": "ceramicCapacitor2",
+        "name": "C12",
+        "value": "100 nF supply",
+        "col": 41,
+        "row": 4,
+        "rot": 90,
+        "side": "top",
+        "color": "#4aa3df",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "9V"
+          },
+          {
+            "name": "2",
+            "x": 1,
+            "y": 0,
+            "number": 2,
+            "net": "GND"
+          }
+        ],
+        "pinned": false
+      }
+    ],
+    "wires": [
+      {
+        "id": "W1",
+        "name": "9V",
+        "net": "9V",
+        "layer": "bottom",
+        "bridgeType": "normal",
+        "style": "solid",
+        "color": "#ef4444",
+        "route": [
+          {
+            "col": 1,
+            "row": 1
+          },
+          {
+            "col": 41,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "id": "W2",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "normal",
+        "style": "solid",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 1,
+            "row": 16
+          },
+          {
+            "col": 41,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W3",
+        "name": "9V",
+        "net": "9V",
+        "layer": "bottom",
+        "bridgeType": "normal",
+        "style": "solid",
+        "color": "#ef4444",
+        "route": [
+          {
+            "col": 42,
+            "row": 1
+          },
+          {
+            "col": 41,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "id": "W4",
+        "name": "9V",
+        "net": "9V",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#ef4444",
+        "route": [
+          {
+            "col": 6,
+            "row": 2
+          },
+          {
+            "col": 6,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "id": "W5",
+        "name": "9V",
+        "net": "9V",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#ef4444",
+        "route": [
+          {
+            "col": 8,
+            "row": 2
+          },
+          {
+            "col": 8,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "id": "W6",
+        "name": "9V",
+        "net": "9V",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#ef4444",
+        "route": [
+          {
+            "col": 15,
+            "row": 2
+          },
+          {
+            "col": 15,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "id": "W7",
+        "name": "9V",
+        "net": "9V",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#ef4444",
+        "route": [
+          {
+            "col": 17,
+            "row": 2
+          },
+          {
+            "col": 17,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "id": "W8",
+        "name": "9V",
+        "net": "9V",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#ef4444",
+        "route": [
+          {
+            "col": 26,
+            "row": 3
+          },
+          {
+            "col": 26,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "id": "W9",
+        "name": "9V",
+        "net": "9V",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#ef4444",
+        "route": [
+          {
+            "col": 32,
+            "row": 2
+          },
+          {
+            "col": 32,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "id": "W10",
+        "name": "9V",
+        "net": "9V",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#ef4444",
+        "route": [
+          {
+            "col": 34,
+            "row": 2
+          },
+          {
+            "col": 34,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "id": "W11",
+        "name": "9V",
+        "net": "9V",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#ef4444",
+        "route": [
+          {
+            "col": 39,
+            "row": 3
+          },
+          {
+            "col": 39,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "id": "W12",
+        "name": "9V",
+        "net": "9V",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#ef4444",
+        "route": [
+          {
+            "col": 41,
+            "row": 4
+          },
+          {
+            "col": 41,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "id": "W13",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 0,
+            "row": 9
+          },
+          {
+            "col": 0,
+            "row": 16
+          },
+          {
+            "col": 1,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W14",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 42,
+            "row": 3
+          },
+          {
+            "col": 42,
+            "row": 16
+          },
+          {
+            "col": 41,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W15",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 43,
+            "row": 9
+          },
+          {
+            "col": 43,
+            "row": 16
+          },
+          {
+            "col": 41,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W16",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 3,
+            "row": 14
+          },
+          {
+            "col": 3,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W17",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 4,
+            "row": 12
+          },
+          {
+            "col": 4,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W18",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 5,
+            "row": 12
+          },
+          {
+            "col": 5,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W19",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 7,
+            "row": 11
+          },
+          {
+            "col": 7,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W20",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 12,
+            "row": 14
+          },
+          {
+            "col": 12,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W21",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 14,
+            "row": 12
+          },
+          {
+            "col": 14,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W22",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 21,
+            "row": 15
+          },
+          {
+            "col": 21,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W23",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 22,
+            "row": 13
+          },
+          {
+            "col": 22,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W24",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 24,
+            "row": 14
+          },
+          {
+            "col": 24,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W25",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 23,
+            "row": 12
+          },
+          {
+            "col": 23,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W26",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 31,
+            "row": 12
+          },
+          {
+            "col": 31,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W27",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 33,
+            "row": 12
+          },
+          {
+            "col": 33,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W28",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 38,
+            "row": 11
+          },
+          {
+            "col": 38,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W29",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 40,
+            "row": 10
+          },
+          {
+            "col": 40,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W30",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 41,
+            "row": 13
+          },
+          {
+            "col": 41,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W31",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 39,
+            "row": 4
+          },
+          {
+            "col": 39,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W32",
+        "name": "GND",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "#111111",
+        "route": [
+          {
+            "col": 41,
+            "row": 5
+          },
+          {
+            "col": 41,
+            "row": 16
+          }
+        ]
+      },
+      {
+        "id": "W33",
+        "name": "ANT",
+        "net": "ANT",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 1,
+            "row": 7
+          },
+          {
+            "col": 0,
+            "row": 7
+          }
+        ]
+      },
+      {
+        "id": "W34",
+        "name": "AUDIO_OUT",
+        "net": "AUDIO_OUT",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 40,
+            "row": 7
+          },
+          {
+            "col": 43,
+            "row": 7
+          }
+        ]
+      },
+      {
+        "id": "W35",
+        "name": "Q1_E",
+        "net": "Q1_E",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 5,
+            "row": 10
+          },
+          {
+            "col": 5,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W36",
+        "name": "Q1_E",
+        "net": "Q1_E",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 7,
+            "row": 10
+          },
+          {
+            "col": 4,
+            "row": 10
+          },
+          {
+            "col": 4,
+            "row": 8
+          },
+          {
+            "col": 5,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W37",
+        "name": "Q1_B",
+        "net": "Q1_B",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 6,
+            "row": 6
+          },
+          {
+            "col": 6,
+            "row": 7
+          }
+        ]
+      },
+      {
+        "id": "W38",
+        "name": "Q1_B",
+        "net": "Q1_B",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 2,
+            "row": 7
+          },
+          {
+            "col": 3,
+            "row": 7
+          },
+          {
+            "col": 3,
+            "row": 6
+          },
+          {
+            "col": 6,
+            "row": 6
+          },
+          {
+            "col": 6,
+            "row": 7
+          }
+        ]
+      },
+      {
+        "id": "W39",
+        "name": "Q1_B",
+        "net": "Q1_B",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 3,
+            "row": 10
+          },
+          {
+            "col": 2,
+            "row": 10
+          },
+          {
+            "col": 2,
+            "row": 5
+          },
+          {
+            "col": 5,
+            "row": 5
+          },
+          {
+            "col": 5,
+            "row": 6
+          },
+          {
+            "col": 6,
+            "row": 6
+          },
+          {
+            "col": 6,
+            "row": 7
+          }
+        ]
+      },
+      {
+        "id": "W40",
+        "name": "Q1_B",
+        "net": "Q1_B",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 4,
+            "row": 11
+          },
+          {
+            "col": 4,
+            "row": 10
+          },
+          {
+            "col": 3,
+            "row": 10
+          },
+          {
+            "col": 3,
+            "row": 8
+          },
+          {
+            "col": 4,
+            "row": 8
+          },
+          {
+            "col": 4,
+            "row": 6
+          },
+          {
+            "col": 6,
+            "row": 6
+          },
+          {
+            "col": 6,
+            "row": 7
+          }
+        ]
+      },
+      {
+        "id": "W41",
+        "name": "Q1_C",
+        "net": "Q1_C",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 9,
+            "row": 8
+          },
+          {
+            "col": 7,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W42",
+        "name": "Q1_C",
+        "net": "Q1_C",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 8,
+            "row": 6
+          },
+          {
+            "col": 8,
+            "row": 8
+          },
+          {
+            "col": 7,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W43",
+        "name": "Q2_E",
+        "net": "Q2_E",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 14,
+            "row": 10
+          },
+          {
+            "col": 14,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W44",
+        "name": "Q2_B",
+        "net": "Q2_B",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 15,
+            "row": 6
+          },
+          {
+            "col": 15,
+            "row": 7
+          }
+        ]
+      },
+      {
+        "id": "W45",
+        "name": "Q2_B",
+        "net": "Q2_B",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 13,
+            "row": 8
+          },
+          {
+            "col": 13,
+            "row": 6
+          },
+          {
+            "col": 15,
+            "row": 6
+          },
+          {
+            "col": 15,
+            "row": 7
+          }
+        ]
+      },
+      {
+        "id": "W46",
+        "name": "Q2_B",
+        "net": "Q2_B",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 12,
+            "row": 10
+          },
+          {
+            "col": 12,
+            "row": 9
+          },
+          {
+            "col": 13,
+            "row": 9
+          },
+          {
+            "col": 13,
+            "row": 6
+          },
+          {
+            "col": 15,
+            "row": 6
+          },
+          {
+            "col": 15,
+            "row": 7
+          }
+        ]
+      },
+      {
+        "id": "W47",
+        "name": "Q2_C",
+        "net": "Q2_C",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 18,
+            "row": 8
+          },
+          {
+            "col": 16,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W48",
+        "name": "Q2_C",
+        "net": "Q2_C",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 17,
+            "row": 6
+          },
+          {
+            "col": 17,
+            "row": 8
+          },
+          {
+            "col": 16,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W49",
+        "name": "Q2_C",
+        "net": "Q2_C",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 19,
+            "row": 10
+          },
+          {
+            "col": 16,
+            "row": 10
+          },
+          {
+            "col": 16,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W50",
+        "name": "Q3_E",
+        "net": "Q3_E",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 23,
+            "row": 10
+          },
+          {
+            "col": 23,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W51",
+        "name": "Q3_B",
+        "net": "Q3_B",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 22,
+            "row": 7
+          },
+          {
+            "col": 22,
+            "row": 6
+          },
+          {
+            "col": 24,
+            "row": 6
+          },
+          {
+            "col": 24,
+            "row": 7
+          }
+        ]
+      },
+      {
+        "id": "W52",
+        "name": "Q3_B",
+        "net": "Q3_B",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 24,
+            "row": 10
+          },
+          {
+            "col": 25,
+            "row": 10
+          },
+          {
+            "col": 25,
+            "row": 9
+          },
+          {
+            "col": 26,
+            "row": 9
+          },
+          {
+            "col": 26,
+            "row": 6
+          },
+          {
+            "col": 24,
+            "row": 6
+          },
+          {
+            "col": 24,
+            "row": 7
+          }
+        ]
+      },
+      {
+        "id": "W53",
+        "name": "Q3_C",
+        "net": "Q3_C",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 27,
+            "row": 8
+          },
+          {
+            "col": 25,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W54",
+        "name": "Q3_C",
+        "net": "Q3_C",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 26,
+            "row": 5
+          },
+          {
+            "col": 27,
+            "row": 5
+          },
+          {
+            "col": 27,
+            "row": 8
+          },
+          {
+            "col": 25,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W55",
+        "name": "Q4_E",
+        "net": "Q4_E",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 31,
+            "row": 10
+          },
+          {
+            "col": 31,
+            "row": 9
+          },
+          {
+            "col": 32,
+            "row": 9
+          },
+          {
+            "col": 32,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W56",
+        "name": "Q4_E",
+        "net": "Q4_E",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 33,
+            "row": 11
+          },
+          {
+            "col": 32,
+            "row": 11
+          },
+          {
+            "col": 32,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W57",
+        "name": "Q4_E",
+        "net": "Q4_E",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 35,
+            "row": 10
+          },
+          {
+            "col": 34,
+            "row": 10
+          },
+          {
+            "col": 34,
+            "row": 9
+          },
+          {
+            "col": 32,
+            "row": 9
+          },
+          {
+            "col": 32,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W58",
+        "name": "Q4_B",
+        "net": "Q4_B",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 32,
+            "row": 6
+          },
+          {
+            "col": 33,
+            "row": 6
+          },
+          {
+            "col": 33,
+            "row": 7
+          }
+        ]
+      },
+      {
+        "id": "W59",
+        "name": "Q4_B",
+        "net": "Q4_B",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 31,
+            "row": 8
+          },
+          {
+            "col": 31,
+            "row": 6
+          },
+          {
+            "col": 33,
+            "row": 6
+          },
+          {
+            "col": 33,
+            "row": 7
+          }
+        ]
+      },
+      {
+        "id": "W60",
+        "name": "Q4_C",
+        "net": "Q4_C",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 34,
+            "row": 6
+          },
+          {
+            "col": 35,
+            "row": 6
+          },
+          {
+            "col": 35,
+            "row": 8
+          },
+          {
+            "col": 34,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W61",
+        "name": "Q4_C",
+        "net": "Q4_C",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 37,
+            "row": 9
+          },
+          {
+            "col": 36,
+            "row": 9
+          },
+          {
+            "col": 36,
+            "row": 8
+          },
+          {
+            "col": 34,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W62",
+        "name": "Q4_C",
+        "net": "Q4_C",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 39,
+            "row": 7
+          },
+          {
+            "col": 38,
+            "row": 7
+          },
+          {
+            "col": 38,
+            "row": 9
+          },
+          {
+            "col": 34,
+            "row": 9
+          },
+          {
+            "col": 34,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W63",
+        "name": "Q4_C",
+        "net": "Q4_C",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 41,
+            "row": 10
+          },
+          {
+            "col": 41,
+            "row": 9
+          },
+          {
+            "col": 40,
+            "row": 9
+          },
+          {
+            "col": 40,
+            "row": 8
+          },
+          {
+            "col": 39,
+            "row": 8
+          },
+          {
+            "col": 39,
+            "row": 6
+          },
+          {
+            "col": 36,
+            "row": 6
+          },
+          {
+            "col": 36,
+            "row": 7
+          },
+          {
+            "col": 35,
+            "row": 7
+          },
+          {
+            "col": 35,
+            "row": 8
+          },
+          {
+            "col": 34,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W64",
+        "name": "Q4_C",
+        "net": "Q4_C",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 40,
+            "row": 13
+          },
+          {
+            "col": 39,
+            "row": 13
+          },
+          {
+            "col": 39,
+            "row": 15
+          },
+          {
+            "col": 34,
+            "row": 15
+          },
+          {
+            "col": 34,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W65",
+        "name": "TUNE",
+        "net": "TUNE",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 21,
+            "row": 7
+          },
+          {
+            "col": 19,
+            "row": 7
+          },
+          {
+            "col": 19,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W66",
+        "name": "TUNE",
+        "net": "TUNE",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 19,
+            "row": 12
+          },
+          {
+            "col": 20,
+            "row": 12
+          },
+          {
+            "col": 20,
+            "row": 9
+          },
+          {
+            "col": 19,
+            "row": 9
+          },
+          {
+            "col": 19,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W67",
+        "name": "TUNE",
+        "net": "TUNE",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 21,
+            "row": 11
+          },
+          {
+            "col": 21,
+            "row": 8
+          },
+          {
+            "col": 19,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W68",
+        "name": "TUNE",
+        "net": "TUNE",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 22,
+            "row": 11
+          },
+          {
+            "col": 22,
+            "row": 8
+          },
+          {
+            "col": 19,
+            "row": 8
+          }
+        ]
+      },
+      {
+        "id": "W69",
+        "name": "DET",
+        "net": "DET",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 37,
+            "row": 13
+          },
+          {
+            "col": 36,
+            "row": 13
+          },
+          {
+            "col": 36,
+            "row": 10
+          }
+        ]
+      },
+      {
+        "id": "W70",
+        "name": "DET",
+        "net": "DET",
+        "layer": "top",
+        "bridgeType": "insulated",
+        "style": "dashed",
+        "color": "",
+        "route": [
+          {
+            "col": 38,
+            "row": 14
+          },
+          {
+            "col": 35,
+            "row": 14
+          },
+          {
+            "col": 35,
+            "row": 11
+          },
+          {
+            "col": 36,
+            "row": 11
+          },
+          {
+            "col": 36,
+            "row": 10
+          }
+        ]
+      }
+    ],
+    "solderBridges": [],
+    "notebook": {
+      "notes": "# FM radio – perfboard transcription\n\nTHT-only layout transcribed from the hand-drawn FM radio sketch. Board is 44×18 holes at 2.54 mm pitch with plated-through holes, so top and bottom pads are electrically connected.\n\nKeep the RF section physically short. Q1–Q4 are generic TO-92 footprints with editor pin order E-B-C; verify the real transistor pinout before soldering.\n\nSketch-derived values retained: L1 = 5 turns Ø5 mm (the sketch also has a 100 µH note), L2 = 22 µH, L3 = 4 turns Ø5 mm with 5–30 pF trimmer, IF1 = 10.7 MHz, L4 = 10 mH, BB105 varicap, 2×1N4148 detector/clamp pair. The crowded Q2–Q3 and BB105 area is kept intentionally simple rather than redesigned.",
+      "tasks": [
+        {
+          "text": "Verify Q1–Q4 transistor pinout against the actual parts before soldering.",
+          "done": false
+        },
+        {
+          "text": "Wind/fit L1 and L3 with short leads and keep them separated from long jumpers.",
+          "done": false
+        },
+        {
+          "text": "Check the 10.7 MHz IF part and BB105 orientation against the original sketch.",
+          "done": false
+        },
+        {
+          "text": "Continuity-check +9V and GND rails before powering the board.",
+          "done": false
+        }
+      ]
+    },
+    "customTemplates": [],
+    "texts": [],
+    "projectId": "fm-radio-hand-sketch-tht-v1"
+  }
+}
