@@ -167,23 +167,34 @@ export class LabelPlacer {
 
 export class ModalService {
   constructor() {
-    this.modal = $("#modal");
-    this.title = $("#modalTitle");
-    this.body = $("#modalBody");
+    this.modal = $("#modal"); this.title = $("#modalTitle"); this.body = $("#modalBody");
     $("#modalCloseBtn")?.addEventListener("click", () => this.close());
-    this.modal?.addEventListener("click", event => {
-      if (event.target === this.modal) this.close();
+    this.modal.addEventListener("click", event => { if (event.target === this.modal) this.close(); });
+    this.modal.addEventListener("keydown", event => {
+      if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); this.close(); }
+      if (event.key === "Tab") {
+        const focusable = [...this.modal.querySelectorAll('button, input, select, textarea, a[href], iframe')].filter(el => !el.disabled && el.getClientRects().length);
+        const first = focusable[0], last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      }
     });
   }
-
-  open(title, html) {
-    this.title.textContent = title;
-    this.body.innerHTML = html;
+  get isOpen() { return !this.modal.classList.contains("hidden"); }
+  open(title, html, onClose = null) {
+    if (this.isOpen) this.close();
+    this.previousFocus = document.activeElement;
+    this.onClose = onClose;
+    this.title.textContent = title; this.body.innerHTML = html;
     this.modal.classList.remove("hidden");
+    $(".app-shell").inert = true; $(".topbar").inert = true;
+    $("#modalCloseBtn").focus();
   }
-
   close() {
-    this.modal.classList.add("hidden");
-    this.body.innerHTML = "";
+    if (!this.isOpen) return;
+    this.onClose?.(); this.onClose = null;
+    this.modal.classList.add("hidden"); this.body.replaceChildren();
+    $(".app-shell").inert = false; $(".topbar").inert = false;
+    if (this.previousFocus?.isConnected) this.previousFocus.focus();
   }
 }

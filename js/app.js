@@ -5,6 +5,11 @@ import { ProjectStorage } from "./storage.js";
 import { PrintService } from "./print.js";
 import { Render3DService } from "./render-3d.js";
 import { ElectricalChecks } from "./checks.js";
+import { EditorPanels } from "./panels.js";
+import { componentIcon } from "./catalog.js";
+import { buildConnectivity, holeKey, routeContains, segmentContains, isInsulated } from "./connectivity.js";
+import { analyzeNetworks } from "./networks.js";
+import { nearestCut, pinContactSide, cutEnds } from "./copper.js";
 
 class PerfboardEditorApp {
   constructor() {
@@ -16,11 +21,18 @@ class PerfboardEditorApp {
     this.view3d = new Render3DService(this.store, this.modal);
     this.checks = new ElectricalChecks(this.store);
 
+    this.panels = new EditorPanels(this);
+    this.selections = [];
+    this.placementRotation = 0;
+    this.keepConnections = true;
+    this.spaceHeld = false;
     this.tool = "select";
     this.selection = null;
     this.drag = null;
     this.pan = null;
     this.wireDraft = [];
+    this.bridgeStart = null;
+    this.routingNet = null;
     this.customPlacingTemplate = null;
     this.zoom = 1;
     this.viewOnlyFullscreen = false;
@@ -34,7 +46,7 @@ class PerfboardEditorApp {
     this.bindToolbar();
     this.bindViewControls();
     this.bindPanelControls();
-    this.setupCollapsibleSections();
+    this.panels.bind();
     this.bindBoardEvents();
     this.bindContextMenu();
     this.bindKeyboard();
@@ -50,22 +62,22 @@ class PerfboardEditorApp {
 
   bindToolbar() {
     $("#newProjectBtn").onclick = () => this.newProject();
-    $("#openProjectBtn").onclick = () => this.storage.openWithPicker($("#fallbackFileInput")).then(() => this.afterLoad()).catch(error => this.setStatus(error.message));
+    $("#openProjectBtn").onclick = () => this.storage.openWithPicker($("#fallbackFileInput")).then(loaded => { if (loaded) this.afterLoad(); }).catch(error => this.reportError(error));
     $("#fallbackFileInput").onchange = event => {
       const [file] = event.target.files || [];
       if (!file) return;
-      this.storage.openFile(file).then(() => this.afterLoad());
+      this.storage.openFile(file).then(() => this.afterLoad()).catch(error => this.reportError(error));
       event.target.value = "";
     };
-    $("#saveProjectBtn").onclick = () => this.storage.save().catch(error => this.setStatus(error.message));
-    $("#saveProjectAsBtn").onclick = () => this.storage.saveAs().catch(error => this.setStatus(error.message));
+    $("#saveProjectBtn").onclick = () => this.storage.save().catch(error => this.reportError(error));
+    $("#saveProjectAsBtn").onclick = () => this.storage.saveAs().catch(error => this.reportError(error));
     $("#backupProjectBtn").onclick = () => this.storage.downloadBackup();
     $("#undoBtn").onclick = () => this.undo();
     $("#redoBtn").onclick = () => this.redo();
     $("#printSchematicBtn").onclick = () => this.printer.showSchematic();
     $("#printLayoutBtn").onclick = () => this.printer.showLayout();
     $("#bomBtn").onclick = () => this.printer.showBom();
-    $("#view3dBtn").onclick = () => this.view3d.show();
+    $("#view3dBtn").onclick = () => this.view3d.show().catch(error => this.reportError(error));
     $("#themeBtn").onclick = () => this.toggleTheme();
 
     $("#layoutPrintMode").onchange = event => {
@@ -83,6 +95,11 @@ class PerfboardEditorApp {
       button.onclick = () => this.setFace(button.dataset.face);
     });
     $("#applyBoardBtn").onclick = () => this.applyBoardForm();
+    $("#boardType").onchange = () => {
+      const strip = $("#boardType").value === "stripboard";
+      $("#stripDirectionField").hidden = !strip;
+      $("#pthMode").checked = !strip;
+    };
     $("#zoomOutBtn").onclick = () => this.setZoom(this.zoom * 0.86);
     $("#zoomInBtn").onclick = () => this.setZoom(this.zoom * 1.16);
     $("#zoomResetBtn").onclick = () => this.setZoom(1);
@@ -99,6 +116,7 @@ class PerfboardEditorApp {
     if (button.dataset.place) {
       this.customPlacingTemplate = null;
       this.setTool("place", button.dataset.place);
+      this.panels.closeDrawers();
       return;
     }
     if (button.dataset.templateIndex) {
@@ -106,6 +124,7 @@ class PerfboardEditorApp {
       if (!template) return;
       this.customPlacingTemplate = template;
       this.setTool("placeCustom");
+      this.panels.closeDrawers();
     }
   }
 
@@ -116,7 +135,8 @@ class PerfboardEditorApp {
       ["#viewShowPinNames", "showPinNames"],
       ["#viewShowRulers", "showRulers"],
       ["#viewShowBack", "showBack"],
-      ["#viewWiresOnTop", "wiresOnTop"]
+      ["#viewWiresOnTop", "wiresOnTop"],
+      ["#viewShowGuides", "showGuides"]
     ];
 
     bindings.forEach(([selector, key]) => {
@@ -137,70 +157,17 @@ class PerfboardEditorApp {
     if ($("#viewShowRulers")) $("#viewShowRulers").checked = view.showRulers !== false;
     if ($("#viewShowBack")) $("#viewShowBack").checked = view.showBack !== false;
     if ($("#viewWiresOnTop")) $("#viewWiresOnTop").checked = view.wiresOnTop !== false;
+    $("#viewShowGuides").checked = view.showGuides !== false;
   }
 
 
-  bindPanelControls() {
-    const shell = document.querySelector(".app-shell");
-    const leftPanel = document.querySelector(".left-panel");
-    const rightPanel = document.querySelector(".right-panel");
-
-    const sync = () => {
-      const leftClosed = leftPanel?.classList.contains("is-collapsed");
-      const rightClosed = rightPanel?.classList.contains("is-collapsed");
-      shell?.classList.toggle("left-collapsed", !!leftClosed);
-      shell?.classList.toggle("right-collapsed", !!rightClosed);
-      const leftLabel = leftClosed ? "Left ›" : "‹ Left";
-      const rightLabel = rightClosed ? "‹ Right" : "Right ›";
-      $("#toggleLeftPanelBtn").textContent = leftLabel;
-      $("#toggleRightPanelBtn").textContent = rightLabel;
-      $("#collapseLeftPanelBtn").textContent = leftClosed ? "›" : "‹";
-      $("#collapseRightPanelBtn").textContent = rightClosed ? "‹" : "›";
-    };
-
-    const refreshLayout = () => {
-      this.requestViewportUiUpdate();
-      requestAnimationFrame(() => this.updateViewportUi());
-      window.setTimeout(() => this.updateViewportUi(), 80);
-      window.setTimeout(() => this.updateViewportUi(), 220);
-    };
-    const toggleLeft = () => { leftPanel?.classList.toggle("is-collapsed"); sync(); refreshLayout(); };
-    const toggleRight = () => { rightPanel?.classList.toggle("is-collapsed"); sync(); refreshLayout(); };
-
-    $("#toggleLeftPanelBtn")?.addEventListener("click", toggleLeft);
-    $("#collapseLeftPanelBtn")?.addEventListener("click", toggleLeft);
-    $("#toggleRightPanelBtn")?.addEventListener("click", toggleRight);
-    $("#collapseRightPanelBtn")?.addEventListener("click", toggleRight);
-    sync();
-  }
-
-  setupCollapsibleSections() {
-    $$(".panel-section").forEach((section, index) => {
-      const title = section.querySelector("h2");
-      if (!title || title.querySelector(".section-toggle")) return;
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "section-toggle";
-      button.title = "Bu bölümü aç/kapat";
-      button.textContent = "−";
-      title.appendChild(button);
-
-      const toggle = event => {
-        event.preventDefault();
-        event.stopPropagation();
-        section.classList.toggle("is-collapsed");
-        button.textContent = section.classList.contains("is-collapsed") ? "+" : "−";
-      };
-      button.addEventListener("click", toggle);
-      title.addEventListener("click", toggle);
-    });
-  }
+  bindPanelControls() { this.panels.bindPanels(); }
 
   bindBoardEvents() {
     const svg = $("#editorSvg");
     const workspace = document.querySelector(".workspace");
-    svg.addEventListener("mousemove", event => this.onPointerMove(event));
-    svg.addEventListener("mousedown", event => this.onPointerDown(event));
+    svg.addEventListener("pointermove", event => { if (!this.drag && !this.pan) this.onPointerMove(event); });
+    svg.addEventListener("pointerdown", event => this.onPointerDown(event));
     svg.addEventListener("auxclick", event => {
       if (event.button === 1) event.preventDefault();
     });
@@ -208,24 +175,28 @@ class PerfboardEditorApp {
     svg.addEventListener("mouseleave", () => {
       if (this.viewOnlyFullscreen) return;
       this.renderer.hoverHole = null;
-      this.renderCanvasOnly();
+      this.renderer.previewComponent = null;
+      this.renderer.copperPreview = null;
+      this.renderer.renderTransient();
     });
-    window.addEventListener("mousemove", event => { if (this.pan) this.onPointerMove(event); });
-    window.addEventListener("mouseup", () => this.onPointerUp());
-    workspace?.addEventListener("mousedown", event => {
-      if (event.target.closest?.(".floating-controls,.context-menu,.mini-map")) return;
+    window.addEventListener("pointermove", event => { if (this.pan || this.drag) this.onPointerMove(event); });
+    window.addEventListener("pointerup", () => this.onPointerUp());
+    window.addEventListener("pointercancel", () => this.onPointerUp());
+    window.addEventListener("blur", () => { this.spaceHeld = false; this.onPointerUp(); });
+    workspace?.addEventListener("pointerdown", event => {
+      if (event.target.closest?.(".workspace-toolbar,.workspace-subbar,.workspace-footer,.context-menu,.mini-map")) return;
       if (event.target.closest?.("#editorSvg")) return;
-      if (this.viewOnlyFullscreen || event.button === 1 || event.buttons === 4) {
+      if (this.viewOnlyFullscreen || this.spaceHeld || event.button === 1 || event.buttons === 4) {
         event.preventDefault();
         this.startPan(event);
       }
     });
     workspace?.addEventListener("wheel", event => {
-      if (event.target.closest?.(".floating-controls,.context-menu,.mini-map,#editorSvg")) return;
+      if (event.target.closest?.(".workspace-toolbar,.workspace-subbar,.workspace-footer,.context-menu,.mini-map,#editorSvg")) return;
       const shouldZoom = this.viewOnlyFullscreen || event.ctrlKey || event.metaKey;
       if (!shouldZoom) return;
       event.preventDefault();
-      this.setZoom(this.zoom * (event.deltaY < 0 ? 1.12 : 0.88));
+      this.setZoom(this.zoom * (event.deltaY < 0 ? 1.12 : 0.88), { x: event.clientX, y: event.clientY });
     }, { passive: false });
     workspace?.addEventListener("scroll", () => this.requestViewportUiUpdate(), { passive: true });
     window.addEventListener("resize", () => this.requestViewportUiUpdate());
@@ -237,7 +208,7 @@ class PerfboardEditorApp {
       const shouldZoom = this.viewOnlyFullscreen || event.ctrlKey || event.metaKey;
       if (!shouldZoom) return;
       event.preventDefault();
-      this.setZoom(this.zoom * (event.deltaY < 0 ? 1.12 : 0.88));
+      this.setZoom(this.zoom * (event.deltaY < 0 ? 1.12 : 0.88), { x: event.clientX, y: event.clientY });
     }, { passive: false });
   }
 
@@ -306,28 +277,30 @@ class PerfboardEditorApp {
   }
 
   rotateSelectedComponent() {
+    if (this.selections.length > 1) { this.setStatus("Select one component to rotate. Groups can be moved or duplicated together."); return; }
     if (this.selection?.type !== "component") return;
-    const component = this.store.componentById(this.selection.id);
-    if (!component) return;
-    this.store.snapshot("Rotate component");
-    component.rot = ((Number(component.rot) || 0) + 90) % 360;
-    this.scheduleAutosave("Component rotated");
-    this.render();
+    const component = this.store.componentById(this.selection.id), before = clone(component), next = clone(component);
+    next.rot = (next.rot + 90) % 360;
+    try { this.store.fitComponent(next); } catch (error) { this.reportError(error); return; }
+    this.store.snapshot("Rotate component"); Object.assign(component, next);
+    this.followPinChanges(before, component); this.scheduleAutosave("Component rotated"); this.render();
   }
 
   duplicateSelectedComponent() {
-    if (this.selection?.type !== "component") return;
-    const component = this.store.componentById(this.selection.id);
-    if (!component) return;
-    this.store.snapshot("Duplicate component");
-    const copy = clone(component);
-    copy.id = this.store.ids.next(this.store.components.prefixFor(copy.kind || "custom"));
-    copy.name = copy.name ? `${copy.name}_copy` : copy.id;
-    copy.col = Math.min(this.store.state.board.cols - 1, Number(copy.col || 0) + 1);
-    copy.row = Math.min(this.store.state.board.rows - 1, Number(copy.row || 0) + 1);
-    this.store.state.components.push(copy);
-    this.select({ type: "component", id: copy.id });
-    this.scheduleAutosave("Component duplicated");
+    if (!this.selections.length) return;
+    const copies = this.selections.map(selection => ({ selection, item: clone(this.selectedObject(selection)) }));
+    const points = copies.flatMap(({ selection, item }) => this.objectPoints(selection, item));
+    const dx = Math.max(...points.map(p => p.col)) + 1 < this.store.state.board.cols ? 1 : 0;
+    const dy = Math.max(...points.map(p => p.row)) + 1 < this.store.state.board.rows ? 1 : 0;
+    this.store.snapshot("Duplicate selection"); const selected = [];
+    copies.forEach(({ selection, item }) => {
+      const key = selection.type === "component" ? "components" : selection.type === "wire" ? "wires" : "texts";
+      item.id = this.store.ids.next(selection.type === "component" ? this.store.components.prefixFor(item.kind) : selection.type === "wire" ? "W" : "T");
+      if (selection.type === "wire") { item.route = item.route.map(p => ({ col: p.col + dx, row: p.row + dy })); item.name = item.id; }
+      else { item.col += dx; item.row += dy; if (selection.type === "component") item.name = item.id; }
+      this.store.state[key].push(item); selected.push({ type: selection.type, id: item.id });
+    });
+    this.selections = selected; this.selection = selected[selected.length - 1]; this.scheduleAutosave("Selection duplicated"); this.render();
   }
 
   toggleSelectedWireBridge(type) {
@@ -349,27 +322,26 @@ class PerfboardEditorApp {
   }
 
   bindKeyboard() {
+    window.addEventListener("keyup", event => { if (event.code === "Space") this.spaceHeld = false; });
     window.addEventListener("keydown", event => {
+      if (this.modal.isOpen || this.isEditingText(event.target)) return;
+      const mod = event.ctrlKey || event.metaKey, key = event.key.toLowerCase();
       if (this.viewOnlyFullscreen) return;
-      if (this.isEditingText(event.target)) return;
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {
-        event.preventDefault();
-        if (event.shiftKey) this.redo(); else this.undo();
-      } else if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
-        event.preventDefault();
-        this.storage.save().catch(error => this.setStatus(error.message));
-      } else if (event.key === "Escape") {
-        this.cancelWireDraft();
-        this.clearSelection();
-        this.hideContextMenu();
-        this.setTool("select");
-      } else if (event.key === "Backspace" && this.tool === "wire" && this.wireDraft.length) {
-        event.preventDefault();
-        this.wireDraft.pop();
-        this.updateDraftRender();
-      } else if (event.key === "Delete") {
-        this.deleteSelection();
-      }
+      if (event.code === "Space") { event.preventDefault(); this.spaceHeld = true; return; }
+      if (mod && key === "s") { event.preventDefault(); this.storage.save().catch(e => this.reportError(e)); }
+      else if (mod && key === "z") { event.preventDefault(); event.shiftKey ? this.redo() : this.undo(); }
+      else if (mod && key === "y") { event.preventDefault(); this.redo(); }
+      else if (mod && key === "d") { event.preventDefault(); this.duplicateSelectedComponent(); }
+      else if (mod && key === "n") { event.preventDefault(); this.newProject(); }
+      else if (event.key === "Escape") { this.cancelWireDraft(); this.clearSelection(); this.hideContextMenu(); this.setTool("select"); this.panels.closeDrawers(); }
+      else if (event.key === "Backspace" && this.tool === "wire" && this.wireDraft.length) { event.preventDefault(); this.wireDraft.pop(); this.updateDraftRender(); }
+      else if (event.key === "Delete") { event.preventDefault(); this.deleteSelection(); }
+      else if (!mod && key === "r") {
+        if (["place", "placeCustom"].includes(this.tool)) { this.placementRotation = (this.placementRotation + 90) % 360; this.updatePlacementPreview(this.renderer.hoverHole); }
+        else this.rotateSelectedComponent();
+      } else if (!mod && ["v", "w", "e", "t", "c", "b"].includes(key)) this.setTool(({ v: "select", w: "wire", e: "wireErase", t: "text", c: "cut", b: "solder" })[key]);
+      else if (!mod && key === "f") { event.preventDefault(); this.centerBoard({ fit: true }); }
+      else if (!mod && key === "/") { event.preventDefault(); this.panels.setPage("library"); const panel = $(".left-panel"); if (innerWidth <= 700) panel.classList.add("is-open"); else { panel.classList.remove("is-collapsed"); $(".app-shell").classList.remove("left-collapsed"); } $("#paletteSearch").focus(); }
     });
   }
 
@@ -378,91 +350,68 @@ class PerfboardEditorApp {
   }
 
   newProject() {
-    this.store.resetProject();
-    this.selection = null;
-    this.wireDraft = [];
-    this.customPlacingTemplate = null;
-    this.storage.fileHandle = null;
-    this.syncBoardForm();
-    this.render();
-    this.scheduleAutosave("New project");
-    this.setStatus("New empty project.");
+    try { this.storage.archiveCurrent(); } catch (error) { this.reportError(error); return; }
+    clearTimeout(this.autosaveTimer);
+    this.store.resetProject(); this.storage.fileHandle = null; this.storage.savedContent = JSON.stringify(this.store.state);
+    this.afterLoad(); this.setStatus("New board. Previous work is available in Project → Recover.");
   }
 
   afterLoad() {
-    this.selection = null;
-    this.wireDraft = [];
-    this.customPlacingTemplate = null;
-    this.syncBoardForm();
-    this.applyTheme();
-    this.render();
+    this.selection = null; this.selections = []; this.drag = null; this.wireDraft = []; this.customPlacingTemplate = null;
+    this.renderer.draftRoute = []; this.renderer.previewComponent = null;
+    this.renderer.activeNet = null;
+    this.setTool("select"); this.syncBoardForm(); this.applyTheme(); this.render();
+    $("#projectName").value = this.store.state.name;
+    $("#checkResults").textContent = "Check routes, net names and unconnected pins.";
     requestAnimationFrame(() => this.centerBoard({ fit: true, instant: true, silent: true }));
     this.scheduleAutosave("Project loaded");
   }
 
   setTool(tool, placingKind = null) {
+    if (tool === "cut" && this.store.state.board.type !== "stripboard") {
+      this.panels.setPage("board");
+      if (innerWidth <= 700) $(".left-panel").classList.add("is-open");
+      else { $(".left-panel").classList.remove("is-collapsed"); $(".app-shell").classList.remove("left-collapsed"); }
+      this.setStatus("Choose Stripboard in Board settings, then apply it to use copper cuts.");
+      $(".copper-menu").open = false; this.panels.syncPanelButtons(); return;
+    }
+    if (tool !== this.tool) { this.wireDraft = []; this.renderer.draftRoute = []; this.bridgeStart = null; this.routingNet = null; }
+    this.renderer.copperPreview = null;
     this.tool = tool;
     this.placingKind = placingKind;
+    this.placementRotation = 0;
+    this.renderer.previewComponent = null;
     $$(".tool-btn").forEach(button => button.classList.toggle("is-active", button.dataset.tool === tool));
     $$(".palette-list button[data-place]").forEach(button => button.classList.toggle("is-active", tool === "place" && button.dataset.place === placingKind));
     $$(".custom-template-palette button[data-template-index]").forEach(button => {
       const index = Number(button.dataset.templateIndex);
       button.classList.toggle("is-active", tool === "placeCustom" && this.store.state.customTemplates?.[index] === this.customPlacingTemplate);
     });
-    const label = tool === "placeCustom"
+    const label = tool === "cut" ? "Click between pads to cut / restore a copper strip · Esc finish"
+      : tool === "solder" ? "Click two neighboring holes to add / remove a solder bridge · Esc finish"
+      : tool === "placeCustom"
       ? `Place ${this.customPlacingTemplate?.name || "custom component"}: click a hole`
       : (tool === "place" ? `Place ${placingKind}: click a hole` : `${tool} tool`);
     this.setStatus(label);
+    $("#activeToolBadge").textContent = tool === "place" ? placingKind : tool === "placeCustom" ? "Custom part" : ({ select: "Select", wire: "Draw wire", wireErase: "Erase", text: "Add note", cut: "Cut strip", solder: "Solder bridge" })[tool];
+    $(".copper-menu").open = false;
+    if (tool === "cut" && this.store.state.view.face !== "bottom") this.setFace("bottom");
+    this.renderer.renderTransient();
   }
 
-  renderPalette() {
-    this.decoratePaletteButtons();
-    const host = $("#customTemplatePalette");
-    if (!host) return;
-    const templates = this.store.state.customTemplates || [];
-    host.innerHTML = templates.length
-      ? `<div class="palette-subtitle">Custom templates</div>${templates.map((template, index) => `
-        <button type="button" data-template-index="${index}" title="Place custom component">
-          <span class="palette-icon">${this.componentIcon(template.kind || "custom")}</span>
-          <span><b>${htmlEscape(template.name || "Custom")}</b><small>${htmlEscape(template.value || "")} • ${(template.pins || []).length} pins</small></span>
-        </button>`).join("")}`
-      : `<div class="palette-subtitle is-empty">No custom templates yet</div>`;
-    $$(".palette-list button[data-place]").forEach(button => button.classList.toggle("is-active", this.tool === "place" && button.dataset.place === this.placingKind));
-    $$(".custom-template-palette button[data-template-index]").forEach(button => {
-      const index = Number(button.dataset.templateIndex);
-      button.classList.toggle("is-active", this.tool === "placeCustom" && templates[index] === this.customPlacingTemplate);
-    });
-  }
+  renderPalette() { this.panels.renderPalette(); }
 
-  decoratePaletteButtons() {
-    $$(".palette-list > button[data-place]").forEach(button => {
-      if (button.dataset.decorated === "1") return;
-      const label = button.textContent.trim();
-      const kind = button.dataset.place;
-      button.innerHTML = `<span class="palette-icon">${this.componentIcon(kind)}</span><span>${htmlEscape(label)}</span>`;
-      button.dataset.decorated = "1";
-    });
-    const customBtn = $("#customComponentBtn");
-    if (customBtn && customBtn.dataset.decorated !== "1") {
-      customBtn.innerHTML = `<span class="palette-icon">${this.componentIcon("custom")}</span><span>Custom component…</span>`;
-      customBtn.dataset.decorated = "1";
-    }
-  }
+  componentIcon(kind) { return componentIcon(kind); }
 
-  componentIcon(kind) {
-    const safeKind = String(kind || "component").replace(/[^a-z0-9_-]/gi, "").toLowerCase() || "component";
-    return `<img src="assets/component-placeholder.png" alt="${safeKind}" loading="lazy">`;
-  }
-
-  setZoom(value) {
+  setZoom(value, anchor = null) {
+    const workspace = $(".workspace"), rect = workspace.getBoundingClientRect();
+    const client = anchor || { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    const point = this.svgPointFromClient(client.x, client.y);
     this.zoom = Math.max(0.25, Math.min(3.5, value));
-    this.renderer.setZoom(this.zoom);
-    $("#zoomText").textContent = `${Math.round(this.zoom * 100)}%`;
-    this.renderCanvasOnly();
-    requestAnimationFrame(() => {
-      this.applyCanvasCentering();
-      this.updateViewportUi();
-    });
+    this.renderer.setZoom(this.zoom); $("#zoomText").textContent = `${Math.round(this.zoom * 100)}%`;
+    this.renderCanvasOnly(); this.applyCanvasCentering();
+    if (point) { workspace.scrollLeft = this.svgMargin("left") + point.x * this.zoom - (client.x - rect.left); workspace.scrollTop = this.svgMargin("top") + point.y * this.zoom - (client.y - rect.top); }
+    this.requestViewportUiUpdate();
   }
 
   centerBoard(options = {}) {
@@ -473,7 +422,7 @@ class PerfboardEditorApp {
     if (options.fit !== false) {
       const size = Geometry.boardPixelSize(this.store.state.board);
       const availableW = Math.max(120, workspace.clientWidth - 72);
-      const availableH = Math.max(120, workspace.clientHeight - 96);
+      const availableH = Math.max(120, workspace.clientHeight - 180);
       const fitZoom = Math.min(3.5, Math.max(0.25, Math.min(availableW / size.width, availableH / size.height)));
       this.setZoom(fitZoom);
     }
@@ -522,6 +471,7 @@ class PerfboardEditorApp {
     try {
       if (workspace.requestFullscreen && !document.fullscreenElement) await workspace.requestFullscreen();
     } catch (error) {
+      this.viewOnlyFullscreen = false; workspace.classList.remove("view-only-fullscreen");
       this.setStatus(`Fullscreen unavailable: ${error.message || error}`);
     }
     this.centerBoard({ fit: true, instant: true, silent: true });
@@ -539,99 +489,96 @@ class PerfboardEditorApp {
 
   onPointerMove(event) {
     if (this.pan) {
-      const workspace = document.querySelector(".workspace");
-      event.preventDefault?.();
-      const panSpeed = this.viewOnlyFullscreen ? 1.45 : 1.35;
-      workspace.scrollLeft = this.pan.scrollLeft - (event.clientX - this.pan.clientX) * panSpeed;
-      workspace.scrollTop = this.pan.scrollTop - (event.clientY - this.pan.clientY) * panSpeed;
-      this.requestViewportUiUpdate();
-      return;
+      const workspace = $(".workspace");
+      workspace.scrollLeft = this.pan.scrollLeft - (event.clientX - this.pan.clientX);
+      workspace.scrollTop = this.pan.scrollTop - (event.clientY - this.pan.clientY);
+      this.requestViewportUiUpdate(); return;
     }
     if (this.viewOnlyFullscreen) return;
-
     const point = this.svgEventToGrid(event);
-    this.renderer.hoverHole = point;
-
-    if (this.drag?.type === "component") {
-      const component = this.store.componentById(this.drag.id);
-      if (component) {
-        component.col = Math.max(0, point.col - this.drag.offsetCol);
-        component.row = Math.max(0, point.row - this.drag.offsetRow);
-        this.render();
+    $("#cursorCoordinates").textContent = `${point.col + 1}, ${point.row + 1}`;
+    if (this.drag) {
+      if (this.drag.type === "wireHandle") {
+        const wire = this.store.wireById(this.drag.id), old = wire.route[this.drag.index];
+        if (old.col === point.col && old.row === point.row) return;
+        if (!this.drag.changed) this.store.snapshot("Move wire point");
+        this.drag.changed = true; wire.route[this.drag.index] = point;
+      } else {
+        let dx = point.col - this.drag.start.col, dy = point.row - this.drag.start.row;
+        const bounds = this.drag.bounds, board = this.store.state.board;
+        dx = Math.max(-bounds.minCol, Math.min(board.cols - 1 - bounds.maxCol, dx));
+        dy = Math.max(-bounds.minRow, Math.min(board.rows - 1 - bounds.maxRow, dy));
+        if (dx === this.drag.dx && dy === this.drag.dy) return;
+        if (!this.drag.changed) this.store.snapshot(this.selections.length > 1 ? "Move selection" : "Move object");
+        this.drag.changed = true; this.drag.dx = dx; this.drag.dy = dy;
+        this.drag.items.forEach(({ selection, original }) => {
+          const item = this.selectedObject(selection);
+          if (selection.type === "wire") item.route = original.route.map(p => ({ col: p.col + dx, row: p.row + dy }));
+          else { item.col = original.col + dx; item.row = original.row + dy; }
+        });
+        if (this.keepConnections) this.drag.attached.forEach(({ wire, route, keys }) => {
+          wire.route = route.map((p, i) => keys.has(holeKey(p)) && (!isInsulated(wire) || i === 0 || i === route.length - 1) ? { col: p.col + dx, row: p.row + dy } : { ...p });
+        });
       }
-      return;
+      this.renderCanvasOnly(); return;
     }
-
-    if (this.wireDraft.length) {
-      this.renderer.draftRoute = [...this.wireDraft, point];
+    if (this.tool === "cut") {
+      this.renderer.copperPreview = nearestCut(this.store.state.board, this.svgEventToGridFloat(event));
+      this.renderer.renderTransient(); return;
     }
-    this.renderCanvasOnly();
+    if (this.tool === "solder") this.renderer.copperPreview = this.bridgeStart ? { a: this.bridgeStart, b: point } : null;
+    if (this.tool !== "solder" && this.renderer.hoverHole?.col === point.col && this.renderer.hoverHole?.row === point.row) return;
+    this.renderer.hoverHole = point;
+    this.updatePlacementPreview(point);
+    this.renderer.draftRoute = this.wireDraft.length ? [...this.wireDraft, point] : [];
+    this.renderer.renderTransient();
   }
 
   onPointerDown(event) {
-    if (this.viewOnlyFullscreen) {
-      if (event.button === 0 || event.button === 1 || event.buttons === 4) {
-        event.preventDefault();
-        this.startPan(event);
-      }
-      return;
-    }
-    if (event.button === 1 || event.buttons === 4) {
-      event.preventDefault();
-      this.startPan(event);
-      return;
-    }
+    if (this.viewOnlyFullscreen || this.spaceHeld || event.button === 1) { event.preventDefault(); this.startPan(event); return; }
     if (event.button !== 0) return;
-
+    event.preventDefault(); $("#editorSvg").focus({ preventScroll: true });
     const point = this.svgEventToGrid(event);
-    if (this.tool === "place" && this.placingKind) {
-      const component = this.store.addComponent(this.placingKind, point.col, point.row);
-      this.select({ type: "component", id: component.id });
-      this.setTool("select");
-      this.scheduleAutosave("Component placed");
-      return;
-    }
-
-    if (this.tool === "placeCustom" && this.customPlacingTemplate) {
-      const component = this.store.addComponentFromTemplate(this.customPlacingTemplate, point.col, point.row);
-      this.select({ type: "component", id: component.id });
-      this.setStatus(`Custom ${this.customPlacingTemplate.name || "component"} placed. Click another hole to place again, or press Esc/select.`);
-      this.scheduleAutosave("Custom component placed");
-      return;
-    }
-
-    if (this.tool === "wire") {
-      this.handleWireClick(point, event.shiftKey);
-      return;
-    }
-
-    if (this.tool === "wireErase") {
-      this.eraseWireNear(point);
-      return;
-    }
-
-    const hit = this.hitTest(event);
-    if (!hit) {
-      this.clearSelection();
-      return;
-    }
-    this.select(hit);
-    if (hit.type === "component") {
-      const component = this.store.componentById(hit.id);
-      this.store.snapshot("Move component");
-      this.drag = { type: "component", id: hit.id, offsetCol: point.col - component.col, offsetRow: point.row - component.row };
-    }
+    try {
+      if (this.tool === "place" || this.tool === "placeCustom") {
+        const component = this.tool === "place" ? this.store.addComponent(this.placingKind, point.col, point.row, this.placementRotation) : this.store.addComponentFromTemplate(this.customPlacingTemplate, point.col, point.row, this.placementRotation);
+        this.select({ type: "component", id: component.id }); this.scheduleAutosave("Component placed");
+        this.setStatus("Click to place another · R rotate · Esc finish"); this.updatePlacementPreview(point); return;
+      }
+      if (this.tool === "text") {
+        const text = this.store.addText(point.col, point.row);
+        this.setTool("select"); this.select({ type: "text", id: text.id }); this.scheduleAutosave("Note added");
+        if (innerWidth <= 1100) $(".right-panel").classList.add("is-open");
+        $("#noteText")?.focus(); $("#noteText")?.select(); return;
+      }
+      if (this.tool === "wire") { this.handleWireClick(point, event.shiftKey); return; }
+      if (this.tool === "cut") {
+        const added = this.store.toggleCut(nearestCut(this.store.state.board, this.svgEventToGridFloat(event)));
+        this.scheduleAutosave("Copper changed"); this.render(); this.setStatus(added ? "Copper cut added. Click the same gap to restore it." : "Copper strip restored."); return;
+      }
+      if (this.tool === "solder") {
+        if (!this.bridgeStart) { this.bridgeStart = point; this.setStatus("Now click a neighboring hole · Esc cancel"); return; }
+        this.store.toggleSolderBridge(this.bridgeStart, point, this.store.state.view.face === "top" ? "top" : "bottom");
+        this.bridgeStart = null; this.renderer.copperPreview = null;
+        this.scheduleAutosave("Solder bridge updated"); this.render(); return;
+      }
+      if (this.tool === "wireErase") { this.eraseWireNear(point); return; }
+      const handle = event.target.closest?.("[data-wire-handle]");
+      if (handle) { this.drag = { type: "wireHandle", id: handle.dataset.id, index: Number(handle.dataset.wireHandle), changed: false }; return; }
+      const hit = this.hitTest(event);
+      if (!hit) { if (!event.shiftKey) this.clearSelection(); return; }
+      if (event.shiftKey) { this.select(hit, true); return; }
+      if (!this.selections.some(s => s.id === hit.id && s.type === hit.type)) this.select(hit);
+      this.beginObjectDrag(point);
+    } catch (error) { this.reportError(error); }
   }
 
   onPointerUp() {
-    if (this.pan) {
-      this.stopPan();
-      return;
-    }
-    if (this.viewOnlyFullscreen) return;
+    if (this.pan) this.stopPan();
     if (!this.drag) return;
+    const changed = this.drag.changed;
     this.drag = null;
-    this.scheduleAutosave("Move complete");
+    if (changed) { this.scheduleAutosave("Position updated"); this.render(); }
   }
 
   startPan(event) {
@@ -657,9 +604,14 @@ class PerfboardEditorApp {
 
   onDoubleClick(event) {
     if (this.viewOnlyFullscreen) return;
-    if (this.tool !== "wire" || this.wireDraft.length < 2) return;
-    event.preventDefault();
-    this.finishWireDraft();
+    if (this.tool === "wire" && this.wireDraft.length >= 2) { event.preventDefault(); this.finishWireDraft(); return; }
+    const hit = this.hitTest(event);
+    if (this.tool !== "select" || hit?.type !== "wire") return;
+    const wire = this.store.wireById(hit.id), point = this.svgEventToGrid(event);
+    if (wire.route.some(p => p.col === point.col && p.row === point.row)) return;
+    const index = wire.route.findIndex((p, i) => i && segmentContains(wire.route[i - 1], p, point));
+    if (index < 1) return;
+    this.store.snapshot("Add wire point"); wire.route.splice(index, 0, point); this.select(hit); this.scheduleAutosave("Wire point added");
   }
 
   handleWireClick(point, keepRouting) {
@@ -679,8 +631,14 @@ class PerfboardEditorApp {
 
   finishWireDraft() {
     const layer = this.store.state.view.face === "both" ? "top" : this.store.state.view.face;
-    const wire = this.store.addWire(this.wireDraft, { layer, style: layer === "jumper" ? "dashed" : "solid" });
+    const graph = buildConnectivity(this.store);
+    const touching = graph.holes.get(holeKey(this.wireDraft[0] || {})) || [];
+    const pin = this.store.pinAt(this.wireDraft[0]?.col, this.wireDraft[0]?.row);
+    const pinGroup = pin && graph.pinGroups.get(`${pin.component.id}|${pin.pinIndex}`);
+    const net = this.routingNet || (pin && (this.store.state.board.platedThroughHoles || pinContactSide(this.store.state.board, pin) === layer) ? (pin.pin.net || [...pinGroup.nets][0]) : null) || touching.find(entry => this.store.state.board.platedThroughHoles || entry.wire.layer === layer)?.wire.net;
+    const wire = this.store.addWire(this.wireDraft, { layer, net, style: layer === "jumper" ? "dashed" : "solid" });
     this.wireDraft = [];
+    this.routingNet = null;
     this.renderer.draftRoute = [];
     if (wire) this.select({ type: "wire", id: wire.id });
     this.scheduleAutosave("Wire added");
@@ -688,33 +646,29 @@ class PerfboardEditorApp {
 
   cancelWireDraft() {
     this.wireDraft = [];
+    this.routingNet = null; this.bridgeStart = null; this.renderer.copperPreview = null;
     this.renderer.draftRoute = [];
-    this.renderCanvasOnly();
+    this.renderer.renderTransient();
   }
 
-  updateDraftRender() {
-    this.renderer.draftRoute = [...this.wireDraft];
-    this.renderCanvasOnly();
-  }
+  updateDraftRender() { this.renderer.draftRoute = [...this.wireDraft]; this.renderer.renderTransient(); }
 
   eraseWireNear(point) {
-    const wire = this.store.state.wires.find(item => item.route.some(p => p.col === point.col && p.row === point.row));
-    if (!wire) {
-      this.setStatus("No wire segment on this hole.");
-      return;
-    }
-    this.store.snapshot("Erase wire");
-    this.store.state.wires = this.store.state.wires.filter(item => item.id !== wire.id);
-    this.selection = null;
-    this.scheduleAutosave("Wire erased");
-    this.render();
+    const bridge = [...this.store.state.solderBridges].reverse().find(b => (this.store.state.view.face === "both" || this.store.state.view.face === b.layer) && routeContains([b.a, b.b], point));
+    if (bridge) { this.store.snapshot("Remove solder bridge"); this.store.state.solderBridges = this.store.state.solderBridges.filter(b => b.id !== bridge.id); this.scheduleAutosave("Solder bridge removed"); this.render(); return; }
+    const wire = [...this.store.state.wires].reverse().find(item => this.renderer.wireVisible(item) && !this.renderer.wireIsGhost(item) && routeContains(item.route, point));
+    if (!wire) { this.setStatus("No visible wire at this hole."); return; }
+    this.select({ type: "wire", id: wire.id }); this.deleteSelection();
   }
 
   hitTest(event) {
     const target = event.target;
-    const componentGroup = target.closest?.(".component");
-    if (componentGroup?.dataset.id) return { type: "component", id: componentGroup.dataset.id };
-    if (target.classList?.contains("wire") && target.dataset.id) return { type: "wire", id: target.dataset.id };
+    const component = target.closest?.(".component");
+    if (component?.dataset.id) return { type: "component", id: component.dataset.id };
+    const wire = target.closest?.(".wire[data-id],.wire-hit[data-id],[data-wire-handle]");
+    if (wire?.dataset.id) return { type: "wire", id: wire.dataset.id };
+    const note = target.closest?.(".note");
+    if (note?.dataset.id) return { type: "text", id: note.dataset.id };
     return null;
   }
 
@@ -727,40 +681,45 @@ class PerfboardEditorApp {
     return Geometry.svgToGrid(this.store.state.board, svgPoint);
   }
 
-  select(selection) {
-    this.selection = selection;
-    this.renderer.selection = selection;
+  svgEventToGridFloat(event) {
+    const p = this.svgPointFromClient(event.clientX, event.clientY), b = this.store.state.board;
+    return { col: (p.x - b.margin) / b.pitchPx, row: (p.y - b.margin) / b.pitchPx };
+  }
+
+  select(selection, additive = false) {
+    if (additive) {
+      const index = this.selections.findIndex(s => s.id === selection.id && s.type === selection.type);
+      if (index >= 0) this.selections.splice(index, 1); else this.selections.push(selection);
+    } else this.selections = selection ? [selection] : [];
+    this.selection = this.selections[this.selections.length - 1] || null;
     this.render();
   }
 
-  clearSelection() {
-    this.selection = null;
-    this.renderer.selection = null;
-    this.render();
-  }
+  clearSelection() { this.select(null); }
 
   deleteSelection() {
-    if (this.store.deleteSelection(this.selection)) {
-      this.selection = null;
-      this.renderer.selection = null;
-      this.scheduleAutosave("Deleted");
-      this.render();
+    if (!this.selections.length) return;
+    this.store.snapshot("Delete selection");
+    for (const [type, key] of [["component", "components"], ["wire", "wires"], ["text", "texts"]]) {
+      const ids = new Set(this.selections.filter(s => s.type === type).map(s => s.id));
+      this.store.state[key] = this.store.state[key].filter(item => !ids.has(item.id));
     }
+    this.clearSelection(); this.scheduleAutosave("Deleted");
   }
 
   undo() {
     if (this.store.undo()) {
-      this.clearSelection();
-      this.render();
-      this.scheduleAutosave("Undo");
+      this.drag = null; this.wireDraft = []; this.renderer.draftRoute = [];
+      this.bridgeStart = null; this.routingNet = null; this.renderer.copperPreview = null;
+      this.syncBoardForm(); this.clearSelection(); this.scheduleAutosave("Undo");
     }
   }
 
   redo() {
     if (this.store.redo()) {
-      this.clearSelection();
-      this.render();
-      this.scheduleAutosave("Redo");
+      this.drag = null; this.wireDraft = []; this.renderer.draftRoute = [];
+      this.bridgeStart = null; this.routingNet = null; this.renderer.copperPreview = null;
+      this.syncBoardForm(); this.clearSelection(); this.scheduleAutosave("Redo");
     }
   }
 
@@ -768,10 +727,14 @@ class PerfboardEditorApp {
     const board = this.store.state.board;
     $("#boardCols").value = board.cols;
     $("#boardRows").value = board.rows;
+    $("#boardType").value = board.type;
+    $("#stripDirection").value = board.stripDirection;
+    $("#stripDirectionField").hidden = board.type !== "stripboard";
     $("#boardPitch").value = board.pitchPx;
     $("#holeDiameter").value = board.holeDiameterMm;
     $("#padDiameter").value = board.padDiameterMm;
-    $("#gridUnit").value = board.gridUnit;
+    $("#gridUnit").value = parseFloat(board.gridUnit) || 2.54;
+    $("#projectName").value = this.store.state.name;
     $("#boardColor").value = board.color;
     $("#pthMode").checked = board.platedThroughHoles;
     if ($("#labelFontSize")) $("#labelFontSize").value = this.store.state.view.labelFontSize ?? 8.4;
@@ -798,14 +761,20 @@ class PerfboardEditorApp {
   }
 
   applyBoardForm() {
+    const cols = Math.round(this.numberFrom("#boardCols", this.store.state.board.cols, 5, 300));
+    const rows = Math.round(this.numberFrom("#boardRows", this.store.state.board.rows, 5, 220));
+    const points = [...this.store.allPins(), ...this.store.state.wires.flatMap(w => w.route), ...this.store.state.texts, ...this.store.state.solderBridges.flatMap(b => [b.a, b.b]), ...this.store.state.board.cuts.flatMap(cutEnds)];
+    if (points.some(p => p.col >= cols || p.row >= rows)) { this.setStatus("Board is too small for the current layout. Move the outer objects first."); return; }
     this.store.snapshot("Board settings");
     const board = this.store.state.board;
-    board.cols = this.numberFrom("#boardCols", board.cols, 5, 300);
-    board.rows = this.numberFrom("#boardRows", board.rows, 5, 220);
+    board.cols = cols;
+    board.rows = rows;
+    board.type = $("#boardType").value;
+    board.stripDirection = $("#stripDirection").value;
     board.pitchPx = this.numberFrom("#boardPitch", board.pitchPx, 10, 42);
     board.holeDiameterMm = this.numberFrom("#holeDiameter", board.holeDiameterMm, 0.1, 3);
     board.padDiameterMm = this.numberFrom("#padDiameter", board.padDiameterMm, 0.2, 4);
-    board.gridUnit = $("#gridUnit").value || "2.54mm";
+    board.gridUnit = `${this.numberFrom("#gridUnit", 2.54, 0.5, 10)}mm`;
     board.color = $("#boardColor").value || board.color;
     board.platedThroughHoles = $("#pthMode").checked;
     board.coordinateLabels = $("#coordLabels") ? $("#coordLabels").checked : board.coordinateLabels !== false;
@@ -813,8 +782,8 @@ class PerfboardEditorApp {
     this.store.state.view.labelFontSize = this.numberFrom("#labelFontSize", this.store.state.view.labelFontSize ?? 8.4, 4, 18);
     this.store.state.view.pinFontSize = this.numberFrom("#pinFontSize", this.store.state.view.pinFontSize ?? 6, 3, 14);
     this.store.state.view.labelWrapChars = this.numberFrom("#labelWrapChars", this.store.state.view.labelWrapChars ?? 20, 8, 48);
-    this.scheduleAutosave("Board settings applied");
-    this.render();
+    this.syncBoardForm(); this.scheduleAutosave("Board settings applied");
+    this.render(); this.centerBoard({ fit: true });
   }
 
   numberFrom(selector, fallback, min, max) {
@@ -867,44 +836,61 @@ class PerfboardEditorApp {
     const workspace = document.querySelector(".workspace");
     if (!workspace) return null;
     const rect = workspace.getBoundingClientRect();
-    const top = $("#editorRulerTop");
+    const bottom = $("#editorRulerBottom");
     const left = $("#editorRulerLeft");
-    if (top) {
-      top.style.left = `${rect.left}px`;
-      top.style.top = `${rect.top}px`;
-      top.style.width = `${rect.width}px`;
-    }
-    if (left) {
-      left.style.left = `${rect.left}px`;
-      left.style.top = `${rect.top}px`;
-      left.style.height = `${rect.height}px`;
-    }
+    const width = workspace.clientWidth;
+    const height = workspace.clientHeight;
     const mini = $("#miniMap");
     if (mini) {
       const w = mini.offsetWidth || 180;
-      mini.style.left = `${Math.max(rect.left + 36, rect.right - w - 12)}px`;
-      mini.style.top = `${rect.top + 12}px`;
+      mini.style.left = `${Math.max(rect.left + 36, rect.left + width - w - 12)}px`;
+      mini.style.top = `${rect.top + 112}px`;
     }
+    for (const [selector, offset] of [[".workspace-toolbar", 12], [".workspace-subbar", 70], [".workspace-footer", height - 52]]) {
+      const el = $(selector); if (!el) continue;
+      el.style.left = `${rect.left + (innerWidth <= 700 ? 12 : 32)}px`;
+      el.style.top = `${rect.top + offset}px`;
+      el.style.width = `${Math.max(0, width - (innerWidth <= 700 ? 24 : 48))}px`;
+    }
+    // Keep rulers inside the drawing area, clear of the toolbars and footer.
+    const rulerLeftWidth = left?.offsetWidth || 28;
+    const rulerBottomHeight = bottom?.offsetHeight || 24;
+    const drawingTop = $(".workspace-subbar").getBoundingClientRect().bottom + 12;
+    const drawingBottom = $(".workspace-footer").getBoundingClientRect().top - 8 - rulerBottomHeight;
+    if (bottom) {
+      bottom.style.left = `${rect.left + rulerLeftWidth}px`;
+      bottom.style.top = `${drawingBottom}px`;
+      bottom.style.width = `${Math.max(0, width - rulerLeftWidth)}px`;
+    }
+    if (left) {
+      left.style.left = `${rect.left}px`;
+      left.style.top = `${drawingTop}px`;
+      left.style.height = `${Math.max(0, drawingBottom - drawingTop)}px`;
+    }
+    const label = $("#fixedSelectionLabel");
+    label.style.left = `${rect.left + 34}px`; label.style.top = `${rect.top + 111}px`;
     return rect;
   }
 
   updateEdgeRulers() {
     const workspace = document.querySelector(".workspace");
     const svg = $("#editorSvg");
-    const top = $("#editorRulerTop");
+    const bottom = $("#editorRulerBottom");
     const left = $("#editorRulerLeft");
-    if (!workspace || !svg || !top || !left) return;
+    if (!workspace || !svg || !bottom || !left) return;
     const wsRect = this.updateOverlayPositions();
     if (!wsRect || this.store.state.view.showRulers === false) {
-      top.classList.add("is-hidden");
+      bottom.classList.add("is-hidden");
       left.classList.add("is-hidden");
       return;
     }
-    top.classList.remove("is-hidden");
+    bottom.classList.remove("is-hidden");
     left.classList.remove("is-hidden");
     const board = this.store.state.board;
     const svgRect = svg.getBoundingClientRect();
-    const fragTop = document.createDocumentFragment();
+    const bottomRect = bottom.getBoundingClientRect();
+    const leftRect = left.getBoundingClientRect();
+    const fragBottom = document.createDocumentFragment();
     const fragLeft = document.createDocumentFragment();
     const make = (className, style = {}, text = "") => {
       const el = document.createElement("span");
@@ -915,21 +901,21 @@ class PerfboardEditorApp {
     };
     for (let col = 0; col < board.cols; col += 1) {
       const p = Geometry.gridToSvg(board, { col, row: 0 });
-      const x = svgRect.left - wsRect.left + p.x * this.zoom;
-      if (x < -35 || x > wsRect.width + 35) continue;
+      const x = svgRect.left - bottomRect.left + p.x * this.zoom;
+      if (x < -35 || x > bottomRect.width + 35) continue;
       const major = col % 5 === 0;
-      fragTop.append(make(`ruler-tick ruler-tick-x${major ? " major" : ""}`, { left: `${x}px` }));
-      fragTop.append(make("ruler-label ruler-label-x", { left: `${x}px` }, String(col + 1)));
+      fragBottom.append(make(`ruler-tick ruler-tick-x${major ? " major" : ""}`, { left: `${x}px` }));
+      fragBottom.append(make("ruler-label ruler-label-x", { left: `${x}px` }, String(col + 1)));
     }
     for (let row = 0; row < board.rows; row += 1) {
       const p = Geometry.gridToSvg(board, { col: 0, row });
-      const y = svgRect.top - wsRect.top + p.y * this.zoom;
-      if (y < -35 || y > wsRect.height + 35) continue;
+      const y = svgRect.top - leftRect.top + p.y * this.zoom;
+      if (y < -35 || y > leftRect.height + 35) continue;
       const major = row % 5 === 0;
       fragLeft.append(make(`ruler-tick ruler-tick-y${major ? " major" : ""}`, { top: `${y}px` }));
       fragLeft.append(make("ruler-label ruler-label-y", { top: `${y}px` }, String(row + 1)));
     }
-    top.replaceChildren(fragTop);
+    bottom.replaceChildren(fragBottom);
     left.replaceChildren(fragLeft);
   }
 
@@ -1012,23 +998,21 @@ class PerfboardEditorApp {
   }
 
   render() {
-    this.applyTheme();
-    this.renderer.selection = this.selection;
-    this.renderer.render();
-    this.applyCanvasCentering();
-    this.renderInspector();
-    this.renderFixedSelectionLabel();
-    this.renderPalette();
-    this.renderLists();
-    this.updateViewportUi();
+    this.applyTheme(); this.renderCanvasOnly();
+    this.renderInspector(); this.renderPalette(); this.renderLists();
+    this.panels.renderNetworks();
+    $("#boardSummary").textContent = `${this.store.state.board.cols} × ${this.store.state.board.rows} · ${this.store.state.board.type} · ${this.store.state.components.length} parts`;
+    $("#projectName").value = this.store.state.name;
+    document.title = `${this.store.state.name} · Perfboard Editor`;
   }
 
   renderCanvasOnly() {
     this.renderer.selection = this.selection;
-    this.renderer.render();
-    this.applyCanvasCentering();
-    this.renderFixedSelectionLabel();
-    this.updateViewportUi();
+    this.renderer.selections = this.selections;
+    this.renderer.connectivity = buildConnectivity(this.store);
+    this.networks = analyzeNetworks(this.store, this.renderer.connectivity);
+    this.renderer.guides = this.networks.guides;
+    this.renderer.render(); this.applyCanvasCentering(); this.renderFixedSelectionLabel(); this.requestViewportUiUpdate();
   }
 
   renderFixedSelectionLabel() {
@@ -1050,52 +1034,64 @@ class PerfboardEditorApp {
   }
 
   renderInspector() {
-    const host = $("#inspector");
-    const pinHost = $("#pinList");
-
+    const host = $("#inspector"), pinHost = $("#pinList");
+    if (this.selections.length > 1) {
+      host.innerHTML = `<div class="inspector-meta">${this.selections.length} OBJECTS SELECTED</div><p class="help-text">Drag an object to move the group. Shift+click to change the selection.</p><div class="inspector-actions"><button id="duplicateGroupBtn">Duplicate</button><button id="deleteSelectedBtn" class="danger">Delete</button></div>`;
+      $("#duplicateGroupBtn").onclick = () => this.duplicateSelectedComponent(); $("#deleteSelectedBtn").onclick = () => this.deleteSelection();
+      pinHost.innerHTML = `<div class="pin-list-empty">Select one component to edit its pins.</div>`; return;
+    }
     if (!this.selection) {
-      host.innerHTML = "Nothing selected.";
-      if (pinHost) pinHost.innerHTML = `<div class="pin-list-empty">Select a component to edit pin names.</div>`;
-      return;
+      host.innerHTML = `<div class="empty-state"><b>Your board, one detail at a time.</b>Select a part, wire or note to edit its properties.<br>Shift+click to select a group.</div>`;
+      pinHost.innerHTML = `<div class="pin-list-empty">Pin names and connections appear here.</div>`; return;
     }
-
     if (this.selection.type === "component") {
-      const component = this.store.componentById(this.selection.id);
-      this.renderComponentInspector(host, component);
-      this.renderSelectedPinList(pinHost, component);
-      return;
-    }
-
-    if (this.selection.type === "wire") {
-      this.renderWireInspector(host, this.store.wireById(this.selection.id));
-      if (pinHost) pinHost.innerHTML = `<div class="pin-list-empty">Wire selected. Select a component to edit its pins.</div>`;
+      const component = this.store.componentById(this.selection.id); this.renderComponentInspector(host, component); this.renderSelectedPinList(pinHost, component);
+    } else if (this.selection.type === "wire") {
+      this.renderWireInspector(host, this.store.wireById(this.selection.id)); pinHost.innerHTML = `<div class="pin-list-empty">Drag a wire handle to move it. Double-click a segment to add a bend.</div>`;
+    } else {
+      this.renderTextInspector(host, this.selectedObject()); pinHost.innerHTML = `<div class="pin-list-empty">Notes are included in layout exports.</div>`;
     }
   }
 
   renderComponentInspector(host, component) {
     if (!component) return;
-    host.innerHTML = `<div class="inspector-form">
-      <label>Name <input id="compName" value="${htmlEscape(component.name)}"></label>
+    host.innerHTML = `<div class="inspector-meta">${htmlEscape(component.kind)} · ${component.pins.length} PINS</div><div class="inspector-form">
+      <label>Reference <input id="compName" value="${htmlEscape(component.name)}"></label>
       <label>Value <input id="compValue" value="${htmlEscape(component.value)}"></label>
-      <label>Col <input id="compCol" type="number" value="${component.col}"></label>
-      <label>Row <input id="compRow" type="number" value="${component.row}"></label>
+      <label>Column <input id="compCol" type="number" min="1" value="${component.col + 1}"></label>
+      <label>Row <input id="compRow" type="number" min="1" value="${component.row + 1}"></label>
       <label>Rotation <select id="compRot"><option>0</option><option>90</option><option>180</option><option>270</option></select></label>
-      <label>Color <input id="compColor" type="color" value="${component.color || "#cbd5e1"}"></label>
-      <div class="inspector-actions"><button id="applyCompBtn">Apply</button><button id="deleteSelectedBtn" class="danger">Delete</button></div>
+      <label>Mounting side <select id="compSide"><option value="top">Top</option><option value="bottom">Bottom</option></select></label>
+      <label>Color <input id="compColor" type="color" value="${component.color}"></label>
+      ${component.pins.length === 2 ? `<label>Lead spacing <input id="leadSpacing" type="number" min="1" max="40" value="${Math.max(Math.abs(component.pins[1].x - component.pins[0].x), Math.abs(component.pins[1].y - component.pins[0].y))}"></label>` : ""}
+      ${component.kind === "header" ? `<label>Pin count <input id="headerCount" type="number" min="1" max="40" value="${component.pins.length}"></label>` : ""}
+      <label class="check-row"><input id="keepConnections" type="checkbox" ${this.keepConnections ? "checked" : ""}/>Keep attached wire points</label>
+      <div class="inspector-actions"><button id="applyCompBtn" class="primary">Apply</button><button id="rotateCompBtn" title="Rotate (R)">↻</button><button id="duplicateCompBtn" title="Duplicate (Ctrl+D)">⧉</button><button id="deleteSelectedBtn" class="danger">Delete</button></div>
+      <button id="saveFootprintBtn">Save footprint to library</button>
     </div>`;
-    $("#compRot").value = String(component.rot || 0);
+    $("#compRot").value = String(component.rot || 0); $("#compSide").value = component.side || "top";
+    $("#keepConnections").onchange = event => this.keepConnections = event.target.checked;
     $("#applyCompBtn").onclick = () => {
-      this.store.snapshot("Edit component");
-      component.name = $("#compName").value;
-      component.value = $("#compValue").value;
-      component.col = Number($("#compCol").value) || 0;
-      component.row = Number($("#compRow").value) || 0;
-      component.rot = Number($("#compRot").value) || 0;
-      component.color = $("#compColor").value;
-      this.scheduleAutosave("Component edited");
-      this.render();
+      const next = clone(component);
+      next.name = $("#compName").value.trim() || component.id; next.value = $("#compValue").value;
+      next.col = Math.round(Number($("#compCol").value) || 1) - 1; next.row = Math.round(Number($("#compRow").value) || 1) - 1;
+      next.rot = Number($("#compRot").value); next.side = $("#compSide").value; next.color = $("#compColor").value;
+      if ($("#leadSpacing")) {
+        const gap = Math.round(this.numberFrom("#leadSpacing", 1, 1, 40)), [a, b] = next.pins;
+        if (Math.abs(b.y - a.y) > Math.abs(b.x - a.x)) b.y = a.y + Math.sign(b.y - a.y || 1) * gap;
+        else b.x = a.x + Math.sign(b.x - a.x || 1) * gap;
+      }
+      if ($("#headerCount")) {
+        const count = Math.round(this.numberFrom("#headerCount", 4, 1, 40));
+        next.pins = Array.from({ length: count }, (_, i) => next.pins[i] || { name: String(i + 1), number: i + 1, x: i, y: 0 });
+      }
+      try { this.store.fitComponent(next); } catch (error) { this.reportError(error); return; }
+      this.store.snapshot("Edit component"); const previous = clone(component); Object.assign(component, next);
+      this.followPinChanges(previous, component); this.scheduleAutosave("Component updated"); this.render();
     };
+    $("#rotateCompBtn").onclick = () => this.rotateSelectedComponent(); $("#duplicateCompBtn").onclick = () => this.duplicateSelectedComponent();
     $("#deleteSelectedBtn").onclick = () => this.deleteSelection();
+    $("#saveFootprintBtn").onclick = () => { const template = clone(component); delete template.id; delete template.col; delete template.row; template.name = component.value || component.kind; this.rememberCustomTemplate(template); this.scheduleAutosave("Footprint saved"); this.renderPalette(); this.setStatus("Footprint added to your component library."); };
   }
 
   renderSelectedPinList(host, component) {
@@ -1110,7 +1106,7 @@ class PerfboardEditorApp {
     const rows = pins.map(pin => {
       const key = `${component.id}|${pin.pinIndex}`;
       const info = connections.get(key);
-      const netText = info ? Array.from(info.nets).join(", ") : "not connected";
+      const netText = info ? Array.from(info.nets).join(", ") || "copper" : "open";
       const statusClass = info ? "is-connected" : "";
       const statusText = info ? "connected" : "open";
       return `
@@ -1119,13 +1115,14 @@ class PerfboardEditorApp {
           <input class="pin-name-box" data-pin-index="${pin.pinIndex}" value="${htmlEscape(pin.pin.name || "")}" placeholder="Pin name">
           <span class="pin-hole">${pin.col + 1},${pin.row + 1}</span>
           <span class="pin-net" title="${htmlEscape(netText)}">${htmlEscape(netText)}</span>
-          <span class="pin-status">${statusText}</span>
+          <input class="pin-plan-net" data-pin-net="${pin.pinIndex}" value="${htmlEscape(pin.pin.net || "")}" maxlength="200" placeholder="e.g. GND" aria-label="Pin ${htmlEscape(pin.pin.number)} planned net" title="Same planned net names should be physically connected">
+          <input type="checkbox" data-pin-nc="${pin.pinIndex}" title="Intentionally unconnected (NC)" aria-label="Pin ${htmlEscape(pin.pin.number)} intentionally unconnected" ${pin.pin.noConnect ? "checked" : ""}>
         </div>`;
     }).join("");
 
     host.innerHTML = `
       <div class="pin-edit-head">
-        <span>No</span><span>Name</span><span>Hole</span><span>Net</span><span>Status</span>
+        <span>No</span><span>Name</span><span>Hole</span><span>Contact</span><span>Plan net</span><span>NC</span>
       </div>
       <div class="pin-edit-list">${rows || `<div class="pin-list-empty">This component has no pins.</div>`}</div>
       <div class="pin-edit-actions">
@@ -1144,94 +1141,66 @@ class PerfboardEditorApp {
       };
     });
 
-    host.querySelector("#addPinBtn")?.addEventListener("click", () => {
-      this.store.snapshot("Add pin");
-      if (this.store.isDipComponent(component)) {
-        this.store.reflowDipPins(component, component.pins.length + 2);
-      } else {
-        const number = component.pins.length + 1;
-        component.pins.push({ number, name: `P${number}`, x: Math.max(0, number - 1), y: 0 });
-      }
-      this.scheduleAutosave("Pin added");
-      this.render();
+    host.querySelectorAll("input[data-pin-nc]").forEach(input => input.onchange = () => {
+      this.store.snapshot("Mark pin NC"); component.pins[Number(input.dataset.pinNc)].noConnect = input.checked; this.scheduleAutosave("Pin status updated"); this.render();
     });
+    host.querySelectorAll("input[data-pin-net]").forEach(input => input.onchange = () => {
+      this.store.snapshot("Set planned net"); component.pins[Number(input.dataset.pinNet)].net = input.value.trim();
+      this.scheduleAutosave("Connection plan updated"); this.render();
+    });
+    const changePinCount = delta => {
+      const next = clone(component), previous = clone(component), dip = this.store.isDipComponent(component);
+      if (delta < 0 && next.pins.length <= (dip ? 2 : 1)) return;
+      if (dip) this.store.reflowDipPins(next, next.pins.length + delta * 2);
+      else if (delta < 0) next.pins.pop();
+      else {
+        let number = 1; while (next.pins.some(p => String(p.number) === String(number))) number++;
+        const x = Math.max(...next.pins.map(p => p.x), -1) + 1;
+        next.pins.push({ number, name: `P${number}`, x, y: 0 });
+      }
+      try { this.store.fitComponent(next); } catch (error) { this.reportError(error); return; }
+      this.store.snapshot(delta > 0 ? "Add pin" : "Remove pin"); Object.assign(component, next);
+      this.followPinChanges(previous, component); this.scheduleAutosave("Pin layout updated"); this.render();
+    };
+    host.querySelector("#addPinBtn").onclick = () => changePinCount(1);
+    host.querySelector("#removePinBtn").onclick = () => changePinCount(-1);
+    host.querySelector("#removePinBtn").disabled = component.pins.length <= (this.store.isDipComponent(component) ? 2 : 1);
 
-    host.querySelector("#removePinBtn")?.addEventListener("click", () => {
-      if (!component.pins.length) return;
-      this.store.snapshot("Remove pin");
-      if (this.store.isDipComponent(component) && component.pins.length > 2) {
-        this.store.reflowDipPins(component, component.pins.length - 2);
-      } else {
-        component.pins.pop();
-      }
-      this.scheduleAutosave("Pin removed");
-      this.render();
-    });
   }
 
-  buildPinConnectionSummary() {
-    const pinsByHole = new Map();
-    this.store.allPins().forEach(pin => {
-      const holeKey = `${pin.col},${pin.row}`;
-      if (!pinsByHole.has(holeKey)) pinsByHole.set(holeKey, []);
-      pinsByHole.get(holeKey).push(pin);
-    });
-
-    const summaries = new Map();
-    this.store.state.wires.forEach(wire => {
-      (wire.route || []).forEach(point => {
-        const pins = pinsByHole.get(`${point.col},${point.row}`) || [];
-        pins.forEach(pin => {
-          const key = `${pin.component.id}|${pin.pinIndex}`;
-          if (!summaries.has(key)) summaries.set(key, { nets: new Set(), wires: new Set() });
-          summaries.get(key).nets.add(wire.net || wire.name || wire.id || "NET");
-          summaries.get(key).wires.add(wire.id);
-        });
-      });
-    });
-    return summaries;
-  }
+  buildPinConnectionSummary() { return (this.renderer.connectivity || buildConnectivity(this.store)).pins; }
 
   renderWireInspector(host, wire) {
     if (!wire) return;
-    host.innerHTML = `<div class="inspector-form">
-      <label>Name <input id="wireName" value="${htmlEscape(wire.name)}"></label>
-      <label>Net <input id="wireNet" value="${htmlEscape(wire.net)}"></label>
-      <label>Layer <select id="wireLayer"><option value="top">top</option><option value="bottom">bottom</option><option value="jumper">jumper</option></select></label>
-      <label>Style <select id="wireStyle"><option value="solid">solid</option><option value="dashed">dashed</option></select></label>
-      <label>Bridge/isolated <select id="wireBridgeType"><option value="normal">normal wire</option><option value="jumper">jumper / atlama</option><option value="insulated">insulated / izole</option></select></label>
-      <label>Color <input id="wireColor" type="color" value="${wire.color || (wire.layer === "bottom" ? "#5fa7ff" : "#d6a11e")}"></label>
-      <div class="inspector-actions"><button id="applyWireBtn">Apply</button><button id="deleteSelectedBtn" class="danger">Delete</button></div>
+    host.innerHTML = `<div class="inspector-meta">WIRE · ${wire.route.length} POINTS</div><div class="inspector-form">
+      <label>Name <input id="wireName" value="${htmlEscape(wire.name)}"></label><label>Net <input id="wireNet" value="${htmlEscape(wire.net)}"></label>
+      <label>Layer <select id="wireLayer"><option value="top">Top</option><option value="bottom">Bottom</option><option value="jumper">Jumper</option></select></label>
+      <label>Conductor <select id="wireBridgeType"><option value="normal">Bare wire</option><option value="jumper">Jumper</option><option value="insulated">Insulated</option></select></label>
+      <label>Style <select id="wireStyle"><option value="solid">Solid</option><option value="dashed">Dashed</option></select></label>
+      <label>Color <input id="wireColor" type="color" value="${wire.color || (wire.layer === "bottom" ? "#78bafa" : "#efc77a")}"></label>
+      <label class="check-row"><input id="renameConnectedNet" type="checkbox" checked/>Rename connected routes</label>
+      <div class="inspector-actions"><button id="applyWireBtn" class="primary">Apply</button><button id="deleteSelectedBtn" class="danger">Delete</button></div>
+      <p class="help-text">Route points · column / row</p><div class="wire-route-list">${wire.route.map((p, i) => `<div class="wire-route-row"><span>${i + 1}</span><input aria-label="Point ${i + 1} column" data-route-col="${i}" type="number" min="1" value="${p.col + 1}"><input aria-label="Point ${i + 1} row" data-route-row="${i}" type="number" min="1" value="${p.row + 1}"><button data-remove-point="${i}" aria-label="Remove point ${i + 1}" ${wire.route.length <= 2 ? "disabled" : ""}>×</button></div>`).join("")}</div>
     </div>`;
-    $("#wireLayer").value = wire.layer;
-    $("#wireStyle").value = wire.style;
-    $("#wireBridgeType").value = wire.bridgeType || (wire.layer === "jumper" ? "jumper" : "normal");
+    $("#wireLayer").value = wire.layer; $("#wireStyle").value = wire.style; $("#wireBridgeType").value = wire.bridgeType || "normal";
     $("#applyWireBtn").onclick = () => {
-      this.store.snapshot("Edit wire");
-      wire.name = $("#wireName").value;
-      wire.net = $("#wireNet").value;
-      wire.layer = $("#wireLayer").value;
-      wire.style = $("#wireStyle").value;
-      wire.bridgeType = $("#wireBridgeType").value;
-      if (wire.bridgeType === "jumper") wire.style = "dashed";
-      wire.color = $("#wireColor").value;
-      this.scheduleAutosave("Wire edited");
-      this.render();
+      const route = wire.route.map((p, i) => ({ col: Math.round(Number(host.querySelector(`[data-route-col="${i}"]`).value)) - 1, row: Math.round(Number(host.querySelector(`[data-route-row="${i}"]`).value)) - 1 }));
+      const board = this.store.state.board;
+      if (route.some(p => !Number.isFinite(p.col) || !Number.isFinite(p.row) || p.col < 0 || p.row < 0 || p.col >= board.cols || p.row >= board.rows)) { this.setStatus("Route points must stay inside the board."); return; }
+      const group = buildConnectivity(this.store).wireGroups.get(wire.id);
+      this.store.snapshot("Edit wire"); wire.name = $("#wireName").value.trim() || wire.id;
+      const net = $("#wireNet").value.trim() || wire.id;
+      if ($("#renameConnectedNet").checked) group?.wires.forEach(w => w.net = net);
+      wire.net = net; wire.layer = $("#wireLayer").value; wire.style = $("#wireStyle").value; wire.bridgeType = $("#wireBridgeType").value;
+      if (wire.layer === "jumper") wire.bridgeType = "jumper";
+      wire.color = $("#wireColor").value; wire.route = route;
+      this.scheduleAutosave("Wire updated"); this.render();
     };
+    $$('[data-remove-point]', host).forEach(button => button.onclick = () => { if (wire.route.length <= 2) return; this.store.snapshot("Remove wire point"); wire.route.splice(Number(button.dataset.removePoint), 1); this.scheduleAutosave("Wire point removed"); this.render(); });
     $("#deleteSelectedBtn").onclick = () => this.deleteSelection();
   }
 
-  renderLists() {
-    const components = this.store.state.components.map(component => `<button class="object-row" data-list-type="component" data-id="${component.id}"><span><b>${htmlEscape(component.name || component.id)}</b><small>${htmlEscape(component.kind)} @ ${component.col + 1},${component.row + 1}</small></span></button>`).join("");
-    const wires = this.store.state.wires.map(wire => `<button class="object-row" data-list-type="wire" data-id="${wire.id}"><span><b>${htmlEscape(wire.net || wire.id)}</b><small>${htmlEscape(wire.layer)} • ${htmlEscape(wire.bridgeType || wire.style || "normal")} • ${wire.route.length} pts</small></span></button>`).join("");
-    $("#componentList").innerHTML = components || `<div class="check-results">No components.</div>`;
-    $("#wireList").innerHTML = wires || `<div class="check-results">No wires.</div>`;
-    this.renderHistoryList();
-    this.updateHistoryButtons();
-    $$(`[data-list-type]`).forEach(button => {
-      button.onclick = () => this.select({ type: button.dataset.listType, id: button.dataset.id });
-    });
-  }
+  renderLists() { this.panels.renderObjects(); this.renderHistoryList(); this.updateHistoryButtons(); }
 
   renderHistoryList() {
     const host = $("#historyList");
@@ -1263,6 +1232,7 @@ class PerfboardEditorApp {
   }
 
   openCustomDesigner(existingTemplate = null) {
+    this.customTemplateEditIndex = this.store.state.customTemplates.indexOf(existingTemplate);
     const template = existingTemplate || {
       name: "X?_CUSTOM",
       value: "custom",
@@ -1283,7 +1253,7 @@ class PerfboardEditorApp {
         <div class="designer-form">
           <label>Name <input id="customName" value="${htmlEscape(template.name)}"></label>
           <label>Value <input id="customValue" value="${htmlEscape(template.value || "")}"></label>
-          <label>Color <input id="customColor" type="color" value="${template.color || "#cbd5e1"}"></label>
+          <label>Color <input id="customColor" type="color" value="${htmlEscape(template.color || "#cbd5e1")}"></label>
           <label>Shape <select id="customShape"><option value="roundrect">rounded rectangle</option><option value="rect">rectangle</option><option value="ellipse">ellipse</option><option value="circle">circle</option><option value="none">pins only</option></select></label>
           <label>Grid cols <input id="customCols" type="number" min="1" max="40" value="${Number(template.cols || template.w || template.bodyW || 4)}"></label>
           <label>Grid rows <input id="customRows" type="number" min="1" max="30" value="${Number(template.rows || template.h || template.bodyH || 3)}"></label>
@@ -1293,7 +1263,7 @@ class PerfboardEditorApp {
           </div>
           <div class="custom-pin-editor">
             <span class="help-text">Selected pin:</span>
-            <input id="customPinName" placeholder="pin name">
+            <input id="customPinNumber" placeholder="number" aria-label="Selected pin number"><input id="customPinName" placeholder="pin name" aria-label="Selected pin name">
             <button id="deleteCustomPinBtn" type="button">Delete pin</button>
           </div>
           <div class="designer-actions">
@@ -1328,8 +1298,7 @@ class PerfboardEditorApp {
     });
 
     const renumber = () => {
-      draft.pins.sort((a, b) => (a.y - b.y) || (a.x - b.x));
-      draft.pins.forEach((pin, index) => { pin.number = index + 1; });
+      draft.pins.forEach((pin, index) => { if (pin.number == null) pin.number = index + 1; });
       if (draft.selectedIndex >= draft.pins.length) draft.selectedIndex = Math.max(0, draft.pins.length - 1);
     };
 
@@ -1374,7 +1343,8 @@ class PerfboardEditorApp {
             if (existingIndex >= 0) {
               draft.selectedIndex = existingIndex;
             } else {
-              draft.pins.push({ number: draft.pins.length + 1, name: `P${draft.pins.length + 1}`, x, y });
+              let number = 1; while (draft.pins.some(p => String(p.number) === String(number))) number++;
+              draft.pins.push({ number, name: `P${number}`, x, y });
               draft.selectedIndex = draft.pins.length - 1;
             }
             renderGrid();
@@ -1388,10 +1358,16 @@ class PerfboardEditorApp {
         nameInput.value = selected?.name || "";
         nameInput.disabled = !selected;
       }
+      $("#customPinNumber").value = selected?.number ?? ""; $("#customPinNumber").disabled = !selected;
       const deleteButton = $("#deleteCustomPinBtn");
       if (deleteButton) deleteButton.disabled = !selected;
     };
 
+    $("#customPinNumber").onchange = event => {
+      const pin = draft.pins[draft.selectedIndex], number = event.target.value.trim();
+      if (!pin || !number || draft.pins.some(p => p !== pin && String(p.number) === number)) { this.setStatus("Pin numbers must be unique and nonempty."); renderGrid(); return; }
+      pin.number = number; renderGrid();
+    };
     $("#resizeCustomGridBtn").onclick = renderGrid;
     $("#clearCustomPinsBtn").onclick = () => { draft.pins = []; draft.selectedIndex = 0; renderGrid(); };
     $("#customPinName").oninput = event => {
@@ -1414,7 +1390,9 @@ class PerfboardEditorApp {
         this.setStatus("Custom component needs at least one pin.");
         return;
       }
-      this.rememberCustomTemplate(next, "Save custom template");
+      if (next.pins.some(p => p.x >= next.cols || p.y >= next.rows)) { this.setStatus("Some pins are outside the custom grid. Enlarge the grid or remove those pins."); return; }
+      if (this.customTemplateEditIndex >= 0) { this.store.snapshot("Update custom template"); this.store.state.customTemplates[this.customTemplateEditIndex] = next; }
+      else this.rememberCustomTemplate(next, "Save custom template");
       this.scheduleAutosave("Custom template saved");
       this.modal.close();
       this.render();
@@ -1425,13 +1403,16 @@ class PerfboardEditorApp {
         this.setStatus("Custom component needs at least one pin.");
         return;
       }
-      this.rememberCustomTemplate(next, "Save custom template");
+      if (next.pins.some(p => p.x >= next.cols || p.y >= next.rows)) { this.setStatus("Some pins are outside the custom grid. Enlarge the grid or remove those pins."); return; }
+      if (this.customTemplateEditIndex >= 0) { this.store.snapshot("Update custom template"); this.store.state.customTemplates[this.customTemplateEditIndex] = next; }
+      else this.rememberCustomTemplate(next, "Save custom template");
+      this.scheduleAutosave("Custom template saved");
       this.customPlacingTemplate = next;
       this.modal.close();
       this.renderPalette();
       this.setTool("placeCustom");
     };
-    document.querySelectorAll("[data-template-index]").forEach(button => {
+    this.modal.body.querySelectorAll("[data-template-index]").forEach(button => {
       button.addEventListener("click", () => this.openCustomDesigner(this.store.state.customTemplates[Number(button.dataset.templateIndex)]));
     });
     renderGrid();
@@ -1459,13 +1440,9 @@ class PerfboardEditorApp {
   }
 
   runChecks() {
-    const problems = this.checks.run();
-    const host = $("#checkResults");
-    if (!problems.length) {
-      host.innerHTML = `<b>OK</b> — obvious shorts/floating pins not found.`;
-      return;
-    }
-    host.innerHTML = problems.slice(0, 80).map(problem => `<div><b>${htmlEscape(problem.type)}</b>: ${htmlEscape(problem.message)}</div>`).join("");
+    const problems = this.checks.run(), host = $("#checkResults");
+    host.innerHTML = problems.length ? `<p>${problems.length} findings · click to locate</p>` + problems.map((p, i) => `<button class="check-result ${p.severity}" data-check="${i}"><b>${htmlEscape(p.type.replaceAll("_", " "))}</b>${htmlEscape(p.message)}</button>`).join("") : `<span class="check-success">No layout issues found.</span><p>Checks cover routes and net names, not circuit behavior.</p>`;
+    host.onclick = event => { const button = event.target.closest("[data-check]"); if (button) { const p = problems[Number(button.dataset.check)]; if (p.selection) this.select(p.selection); if (p.point) this.focusPoint(p.point); else this.focusSelection(); } };
   }
 
   toggleTheme() {
@@ -1478,8 +1455,96 @@ class PerfboardEditorApp {
     document.body.classList.toggle("light", this.store.state.view.theme === "light");
   }
 
+  reportError(error) {
+    if (error?.name === "AbortError") return;
+    const message = error?.message || String(error);
+    this.setStatus(message);
+    if (this.modal.isOpen) {
+      let notice = this.modal.body.querySelector(".modal-error");
+      if (!notice) { notice = document.createElement("p"); notice.className = "modal-error"; notice.setAttribute("role", "alert"); this.modal.body.prepend(notice); }
+      notice.textContent = message;
+    }
+  }
+
+  selectedObject(selection = this.selection) {
+    if (!selection) return null;
+    const key = selection.type === "component" ? "components" : selection.type === "wire" ? "wires" : "texts";
+    return this.store.state[key].find(item => item.id === selection.id);
+  }
+
+  objectPoints(selection, item = this.selectedObject(selection)) {
+    return selection.type === "component" ? this.store.pinsFor(item) : selection.type === "wire" ? item.route : [item];
+  }
+
+  beginObjectDrag(point) {
+    const items = this.selections.map(selection => ({ selection, original: clone(this.selectedObject(selection)) }));
+    const points = items.flatMap(({ selection, original }) => this.objectPoints(selection, original));
+    if (!points.length) return;
+    const movedParts = items.filter(i => i.selection.type === "component").map(i => i.original);
+    const attached = this.store.state.wires.filter(w => !this.selections.some(s => s.type === "wire" && s.id === w.id)).map(wire => {
+      const keys = new Set(movedParts.filter(c => this.store.state.board.platedThroughHoles || (wire.layer === "jumper" ? "top" : wire.layer) === pinContactSide(this.store.state.board, { component: c })).flatMap(c => this.store.pinsFor(c).map(holeKey)));
+      return { wire, route: clone(wire.route), keys };
+    }).filter(({ wire, keys }) => wire.route.some((p, i) => keys.has(holeKey(p)) && (!isInsulated(wire) || i === 0 || i === wire.route.length - 1)));
+    this.drag = { type: "objects", start: point, items, attached, dx: 0, dy: 0, changed: false, bounds: { minCol: Math.min(...points.map(p => p.col)), maxCol: Math.max(...points.map(p => p.col)), minRow: Math.min(...points.map(p => p.row)), maxRow: Math.max(...points.map(p => p.row)) } };
+  }
+
+  followPinChanges(before, after) {
+    if (!this.keepConnections) return;
+    const mapping = new Map();
+    before.pins.forEach(pin => { const next = after.pins.find(p => String(p.number) === String(pin.number)); if (next) mapping.set(holeKey(Geometry.pinAbsolute(before, pin)), Geometry.pinAbsolute(after, next)); });
+    this.store.state.wires.forEach(wire => {
+      if (!this.store.state.board.platedThroughHoles && (wire.layer === "jumper" ? "top" : wire.layer) !== pinContactSide(this.store.state.board, { component: before })) return;
+      wire.route = wire.route.map((point, i) => mapping.has(holeKey(point)) && (!isInsulated(wire) || i === 0 || i === wire.route.length - 1) ? { ...mapping.get(holeKey(point)) } : point);
+    });
+  }
+
+  updatePlacementPreview(point) {
+    this.renderer.previewComponent = null;
+    if (point && ["place", "placeCustom"].includes(this.tool)) {
+      const item = this.tool === "place" ? this.store.components.create(this.placingKind, point.col, point.row) : this.store.components.fromTemplate(this.customPlacingTemplate, point.col, point.row);
+      item.rot = this.placementRotation;
+      try { this.store.fitComponent(item); this.renderer.previewComponent = item; } catch { this.setStatus("Footprint does not fit this board. Increase its size in Board settings."); }
+    }
+    this.renderer.renderTransient();
+  }
+
+  focusSelection() {
+    if (!this.selection) return;
+    const points = this.objectPoints(this.selection); if (!points.length) return;
+    const col = (Math.min(...points.map(p => p.col)) + Math.max(...points.map(p => p.col))) / 2;
+    const row = (Math.min(...points.map(p => p.row)) + Math.max(...points.map(p => p.row))) / 2;
+    this.focusPoint({ col, row });
+  }
+
+  focusPoint(point) {
+    const p = Geometry.gridToSvg(this.store.state.board, point), workspace = $(".workspace");
+    workspace.scrollTo({ left: this.svgMargin("left") + p.x * this.zoom - workspace.clientWidth / 2, top: this.svgMargin("top") + p.y * this.zoom - workspace.clientHeight / 2, behavior: "smooth" });
+  }
+
+  startGuide(guide) {
+    if (guide.a.side !== guide.b.side && !this.store.state.board.platedThroughHoles) { this.setStatus("These contacts are on opposite faces. Add a through-hole connection before routing."); return; }
+    this.setFace(guide.a.side); this.setTool("wire");
+    this.routingNet = guide.net; this.wireDraft = [{ col: guide.a.col, row: guide.a.row }];
+    this.updateDraftRender(); this.focusPoint(guide.a); this.panels.closeDrawers();
+    this.setStatus(`${guide.net}: route to ${guide.b.col + 1},${guide.b.row + 1} · Shift+click adds bends · Esc cancel`);
+  }
+
+  renderTextInspector(host, note) {
+    if (!note) return;
+    host.innerHTML = `<div class="inspector-form"><label>Note <textarea id="noteText" rows="4" maxlength="2000">${htmlEscape(note.text)}</textarea></label><label>Column <input id="noteCol" type="number" min="1" value="${note.col + 1}"></label><label>Row <input id="noteRow" type="number" min="1" value="${note.row + 1}"></label><label>Size <input id="noteSize" type="number" min="6" max="48" value="${note.size}"></label><label>Color <input id="noteColor" type="color" value="${htmlEscape(note.color)}"></label><div class="inspector-actions"><button id="applyNoteBtn" class="primary">Apply note</button><button id="deleteSelectedBtn" class="danger">Delete</button></div></div>`;
+    $("#applyNoteBtn").onclick = () => {
+      this.store.snapshot("Edit note"); note.text = $("#noteText").value || "Note";
+      note.col = Math.round(this.numberFrom("#noteCol", 1, 1, this.store.state.board.cols)) - 1;
+      note.row = Math.round(this.numberFrom("#noteRow", 1, 1, this.store.state.board.rows)) - 1;
+      note.size = this.numberFrom("#noteSize", 12, 6, 48); note.color = $("#noteColor").value;
+      this.scheduleAutosave("Note updated"); this.render();
+    };
+    $("#deleteSelectedBtn").onclick = () => this.deleteSelection();
+  }
+
   scheduleAutosave(reason) {
-    this.setSaveState(`${reason} • dirty`);
+    this.setSaveState(`${reason} · saving to browser…`);
+    $("#checkResults").textContent = "Layout changed. Run checks to update results.";
     clearTimeout(this.autosaveTimer);
     this.autosaveTimer = setTimeout(() => this.storage.autosave(), 500);
   }

@@ -1,0 +1,213 @@
+{
+  "format": "perfboard-editor",
+  "state": {
+    "version": "1.4.0",
+    "name": "Stripboard LED indicator",
+    "board": {
+      "type": "stripboard",
+      "stripDirection": "horizontal",
+      "cuts": [
+        {
+          "col": 8,
+          "row": 1,
+          "axis": "horizontal"
+        }
+      ],
+      "cols": 12,
+      "rows": 10,
+      "pitchPx": 22,
+      "margin": 46,
+      "holeDiameterMm": 0.9,
+      "padDiameterMm": 1.8,
+      "gridUnit": "2.54mm",
+      "platedThroughHoles": false,
+      "color": "#284969",
+      "coordinateLabels": true,
+      "coordinateMode": "numbersTopLettersSide"
+    },
+    "view": {
+      "face": "bottom",
+      "showLabels": true,
+      "showPinNames": true,
+      "showRulers": true,
+      "showBack": true,
+      "wiresOnTop": true,
+      "showGuides": true,
+      "theme": "dark",
+      "layoutPrintMode": "auto",
+      "labelFontSize": 8.4,
+      "pinFontSize": 6,
+      "labelWrapChars": 20
+    },
+    "components": [
+      {
+        "id": "J1",
+        "kind": "header",
+        "name": "J1",
+        "value": "5V input",
+        "col": 1,
+        "row": 1,
+        "rot": 90,
+        "side": "top",
+        "color": "#d7dce4",
+        "pins": [
+          {
+            "name": "+5V",
+            "x": 0,
+            "y": 0,
+            "number": "1",
+            "net": "5V"
+          },
+          {
+            "name": "GND",
+            "x": 1,
+            "y": 0,
+            "number": "2",
+            "net": "GND"
+          }
+        ]
+      },
+      {
+        "id": "R1",
+        "kind": "resistor",
+        "name": "R1",
+        "value": "1k",
+        "col": 3,
+        "row": 1,
+        "rot": 90,
+        "side": "top",
+        "color": "#b88c4a",
+        "pins": [
+          {
+            "name": "1",
+            "x": 0,
+            "y": 0,
+            "number": "1",
+            "net": "5V"
+          },
+          {
+            "name": "2",
+            "x": 3,
+            "y": 0,
+            "number": "2",
+            "net": "LED_A"
+          }
+        ]
+      },
+      {
+        "id": "D1",
+        "kind": "led",
+        "name": "D1",
+        "value": "Green",
+        "col": 6,
+        "row": 4,
+        "rot": 90,
+        "side": "top",
+        "color": "#e45050",
+        "pins": [
+          {
+            "name": "A",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "LED_A"
+          },
+          {
+            "name": "K",
+            "x": 2,
+            "y": 0,
+            "number": 2,
+            "net": "GND"
+          }
+        ]
+      },
+      {
+        "id": "TP1",
+        "kind": "testpad",
+        "name": "TP1",
+        "value": "5V test point",
+        "col": 10,
+        "row": 1,
+        "rot": 0,
+        "side": "top",
+        "color": "#ffe08a",
+        "pins": [
+          {
+            "name": "TP",
+            "x": 0,
+            "y": 0,
+            "number": 1,
+            "net": "5V"
+          }
+        ]
+      }
+    ],
+    "wires": [
+      {
+        "id": "W1",
+        "name": "W1",
+        "net": "GND",
+        "layer": "bottom",
+        "bridgeType": "insulated",
+        "style": "solid",
+        "color": "",
+        "route": [
+          {
+            "col": 1,
+            "row": 2
+          },
+          {
+            "col": 9,
+            "row": 2
+          },
+          {
+            "col": 9,
+            "row": 6
+          }
+        ]
+      }
+    ],
+    "solderBridges": [
+      {
+        "id": "SB1",
+        "layer": "bottom",
+        "a": {
+          "col": 3,
+          "row": 4
+        },
+        "b": {
+          "col": 3,
+          "row": 5
+        }
+      }
+    ],
+    "notebook": {
+      "notes": "# LED indicator\n\nA 5 V input drives a green LED through a 1 kΩ resistor. Copper strips run across columns on the bottom face.\n\nThe cut between columns 9 and 10 in row 2 deliberately isolates TP1. Use the remaining 5V connection guide to route it. The GND wire is insulated, so intermediate crossings do not join copper.\n\nSB1 joins the LED anode strip to the neighboring spare strip. Coordinates use the top view, column then row, counted from 1.",
+      "tasks": [
+        {
+          "text": "Make C1 between holes 9, 2 and 10, 2 before soldering.",
+          "done": false
+        },
+        {
+          "text": "Place J1, R1 and D1; check LED polarity.",
+          "done": false
+        },
+        {
+          "text": "Add SB1 and the insulated GND wire.",
+          "done": false
+        },
+        {
+          "text": "Route the remaining 5V connection to TP1.",
+          "done": false
+        },
+        {
+          "text": "Check copper continuity against the connection plan.",
+          "done": false
+        }
+      ]
+    },
+    "customTemplates": [],
+    "texts": [],
+    "projectId": "example-stripboard-led-v1"
+  }
+}

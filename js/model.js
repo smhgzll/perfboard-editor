@@ -1,9 +1,15 @@
 import { clone, Geometry } from "./core.js";
+import { CATALOG_BY_KIND } from "./catalog.js";
+import { validateProject } from "./validation.js";
+import { adjacent, insideBoard, activeCut, cutKey } from "./copper.js";
 
 export const DEFAULT_STATE = Object.freeze({
-  version: "clean-1.2.0-custom-history-labels",
+  version: "1.4.0",
   name: "Untitled Project",
   board: {
+    type: "perfboard",
+    stripDirection: "horizontal",
+    cuts: [],
     cols: 30,
     rows: 20,
     pitchPx: 22,
@@ -23,6 +29,7 @@ export const DEFAULT_STATE = Object.freeze({
     showRulers: true,
     showBack: true,
     wiresOnTop: true,
+    showGuides: true,
     theme: "dark",
     layoutPrintMode: "auto",
     labelFontSize: 8.4,
@@ -31,12 +38,14 @@ export const DEFAULT_STATE = Object.freeze({
   },
   components: [],
   wires: [],
+  solderBridges: [],
+  notebook: { notes: "", tasks: [] },
   customTemplates: [],
   texts: []
 });
 
 export function newState() {
-  return clone(DEFAULT_STATE);
+  return { ...clone(DEFAULT_STATE), projectId: globalThis.crypto?.randomUUID?.() || `project-${Date.now()}-${Math.random().toString(36).slice(2)}` };
 }
 
 export class IdService {
@@ -49,6 +58,7 @@ export class IdService {
     const taken = new Set([
       ...state.components.map(item => item.id),
       ...state.wires.map(item => item.id),
+      ...state.solderBridges.map(item => item.id),
       ...state.texts.map(item => item.id)
     ]);
     let i = 1;
@@ -63,20 +73,23 @@ export class ComponentFactory {
   }
 
   create(kind, col, row) {
+    const definition = CATALOG_BY_KIND.get(kind)?.definition;
     const prefix = this.prefixFor(kind);
     const id = this.ids.next(prefix);
     const component = {
       id,
       kind,
-      name: this.defaultName(kind),
+      name: id,
       value: this.defaultValue(kind),
       col,
       row,
       rot: 0,
+      side: "top",
       color: this.defaultColor(kind),
       pins: this.pinsFor(kind)
     };
-    Object.assign(component, this.bodyFor(kind));
+    Object.assign(component, definition ? clone(definition) : this.bodyFor(kind));
+    delete component.prefix;
     if (this.isDipKind(kind)) {
       component.w = Math.ceil(component.pins.length / 2);
       component.h = 4;
@@ -85,6 +98,7 @@ export class ComponentFactory {
   }
 
   prefixFor(kind) {
+    if (CATALOG_BY_KIND.get(kind)?.definition) return CATALOG_BY_KIND.get(kind).definition.prefix;
     return ({
       resistor: "R", resistorAxial3: "R", resistorAxial5: "R", resistorVertical: "R",
       capacitor: "C", ceramicCapacitor2: "C", capacitorRadial3: "C", filmCapacitor5: "C",
@@ -117,7 +131,7 @@ export class ComponentFactory {
       inductorAxial5: "inductor / 5-hole", smdResistor: "10k", smdCapacitor: "100n", smdElectrolytic: "10uF", smdLed: "LED",
       ic: "DIP-14", dip8: "DIP-8", dip14: "DIP-14", dip16: "DIP-16", dip28: "DIP-28",
       header: "1x4", jackpads: "TRS", screwTerminal2: "2P 5.08mm", screwTerminal3: "3P 5.08mm",
-      transistor: "TO-92", potentiometer: "B10K", trimpot: "10K", regulatorTo220: "7805/AMS?",
+      transistor: "TO-92", potentiometer: "B10K", trimpot: "10K", regulatorTo220: "TO-220 regulator",
       tactSwitch: "6x6", testpad: "", custom: "custom"
     }[kind] || "");
   }
@@ -142,17 +156,18 @@ export class ComponentFactory {
       trimpot: { bodyShape: "roundrect", bodyW: 3, bodyH: 3, w: 3, h: 3 },
       regulatorTo220: { bodyShape: "roundrect", bodyW: 3, bodyH: 4, w: 3, h: 4 },
       tactSwitch: { bodyShape: "roundrect", bodyW: 4, bodyH: 4, w: 4, h: 4 },
-      screwTerminal2: { bodyShape: "roundrect", bodyW: 2, bodyH: 2, w: 2, h: 2 },
-      screwTerminal3: { bodyShape: "roundrect", bodyW: 3, bodyH: 2, w: 3, h: 2 },
+      screwTerminal2: { bodyShape: "roundrect", bodyW: 3, bodyH: 2, w: 3, h: 2 },
+      screwTerminal3: { bodyShape: "roundrect", bodyW: 5, bodyH: 2, w: 5, h: 2 },
       custom: { bodyShape: "roundrect", bodyW: 4, bodyH: 3, w: 4, h: 3 }
     }[kind] || {});
   }
 
   isDipKind(kind) {
-    return ["ic", "dip8", "dip14", "dip16", "dip28"].includes(kind);
+    return kind === "ic" || /^dip\d+$/.test(kind);
   }
 
   pinsFor(kind) {
+    if (CATALOG_BY_KIND.get(kind)?.definition?.pins) return clone(CATALOG_BY_KIND.get(kind).definition.pins);
     const pin = (name, x, y, number = undefined) => ({ name, x, y, number: number ?? name });
     switch (kind) {
       case "resistor": return [pin("1", 0, 0), pin("2", 3, 0)];
@@ -179,8 +194,8 @@ export class ComponentFactory {
       case "testpad": return [pin("TP", 0, 0, 1)];
       case "jackpads": return [pin("L", 0, 0, 1), pin("R", 0, 1, 2), pin("G", 0, 2, 3), pin("SW", 0, 3, 4)];
       case "header": return [pin("1", 0, 0), pin("2", 1, 0), pin("3", 2, 0), pin("4", 3, 0)];
-      case "screwTerminal2": return [pin("1", 0, 0), pin("2", 1, 0)];
-      case "screwTerminal3": return [pin("1", 0, 0), pin("2", 1, 0), pin("3", 2, 0)];
+      case "screwTerminal2": return [pin("1", 0, 0), pin("2", 2, 0)];
+      case "screwTerminal3": return [pin("1", 0, 0), pin("2", 2, 0), pin("3", 4, 0)];
       case "transistor": return [pin("E", 0, 1, 1), pin("B", 1, 0, 2), pin("C", 2, 1, 3)];
       case "potentiometer": return [pin("1", 0, 3), pin("W", 2, 0, 2), pin("3", 4, 3)];
       case "trimpot": return [pin("1", 0, 2), pin("W", 1, 0, 2), pin("3", 2, 2)];
@@ -213,12 +228,13 @@ export class ComponentFactory {
     const component = {
       id,
       kind,
-      name: template.name || this.defaultName(kind),
+      name: `${id}${template.name ? ` ${template.name.replace(/^X\?_?/, "")}` : ""}`,
       value: template.value || "",
       col,
       row,
       rot: 0,
-      color: template.color || this.defaultColor(kind),
+      side: "top",
+      color: /^#[0-9a-f]{6}$/i.test(template.color) ? template.color : this.defaultColor(kind),
       bodyShape: template.bodyShape || "roundrect",
       bodyW: Number(template.bodyW) || 4,
       bodyH: Number(template.bodyH) || 3,
@@ -274,9 +290,16 @@ export class ProjectStore {
     return true;
   }
 
+  normalizeValidated(raw) {
+    const payload = raw?.state ? raw.state : raw;
+    validateProject(payload);
+    return this.normalize(payload);
+  }
+
   load(raw) {
     const payload = raw?.state ? raw.state : raw;
-    const next = this.normalize(payload || {});
+    validateProject(payload);
+    const next = this.normalize(payload);
     this.state = next;
     this.history = [];
     this.future = [];
@@ -289,10 +312,30 @@ export class ProjectStore {
     Object.assign(state, raw);
     state.board = { ...newState().board, ...(raw.board || {}) };
     state.view = { ...newState().view, ...(raw.view || {}) };
+    state.board.cuts = (raw.board?.cuts || []).map(cut => ({ col: Number(cut.col), row: Number(cut.row), axis: cut.axis }));
+    state.notebook = { notes: raw.notebook?.notes || "", tasks: (raw.notebook?.tasks || []).map(task => ({ text: task.text, done: !!task.done })) };
+    state.solderBridges = (raw.solderBridges || []).map(bridge => ({ id: bridge.id, layer: bridge.layer || "bottom", a: { col: Number(bridge.a.col), row: Number(bridge.a.row) }, b: { col: Number(bridge.b.col), row: Number(bridge.b.row) } }));
+    for (const key of ["cols", "rows", "pitchPx", "margin", "holeDiameterMm", "padDiameterMm"]) state.board[key] = Number(state.board[key]);
+    if (!["top", "bottom", "both"].includes(state.view.face)) state.view.face = "top";
+    if (!["dark", "light"].includes(state.view.theme)) state.view.theme = "dark";
     state.components = Array.isArray(raw.components) ? raw.components.map(component => this.normalizeComponent(component)) : [];
     state.wires = Array.isArray(raw.wires) ? raw.wires.map(wire => this.normalizeWire(wire)) : [];
     state.customTemplates = Array.isArray(raw.customTemplates) ? raw.customTemplates : [];
-    state.texts = Array.isArray(raw.texts) ? raw.texts : [];
+    state.texts = (raw.texts || []).map(text => ({ ...text, col: Number(text.col) || 0, row: Number(text.row) || 0, text: String(text.text || ""), size: Math.max(6, Math.min(48, Number(text.size) || 12)), color: /^#[0-9a-f]{6}$/i.test(text.color) ? text.color : "#e6edf3" }));
+    const used = new Set();
+    const reserved = new Set([...raw.components || [], ...raw.wires || [], ...raw.texts || [], ...raw.solderBridges || []].map(item => item.id).filter(Boolean));
+    for (const [items, prefix] of [[state.components, "X"], [state.wires, "W"], [state.texts, "T"], [state.solderBridges, "SB"]]) {
+      items.forEach((item, index) => {
+        const original = (prefix === "X" ? raw.components : prefix === "W" ? raw.wires : prefix === "SB" ? raw.solderBridges : raw.texts)?.[index]?.id;
+        if (!original || used.has(original)) {
+          const p = prefix === "X" ? this.components.prefixFor(item.kind) : prefix;
+          let n = 1; while (used.has(`${p}${n}`) || reserved.has(`${p}${n}`)) n++;
+          item.id = `${p}${n}`;
+        }
+        used.add(item.id);
+      });
+    }
+    state.version = DEFAULT_STATE.version;
     return state;
   }
 
@@ -301,6 +344,8 @@ export class ProjectStore {
     return {
       ...base,
       ...component,
+      side: component.side === "bottom" ? "bottom" : "top",
+      color: /^#[0-9a-f]{6}$/i.test(component.color) ? component.color : base.color,
       col: Number(component.col) || 0,
       row: Number(component.row) || 0,
       rot: this.normalizeRotation(component.rot),
@@ -309,6 +354,8 @@ export class ProjectStore {
       w: Number(component.w || component.bodyW || base.w || base.bodyW || 1),
       h: Number(component.h || component.bodyH || base.h || base.bodyH || 1),
       pins: Array.isArray(component.pins) && component.pins.length ? component.pins.map((pin, index) => ({
+        noConnect: !!pin.noConnect,
+        net: String(pin.net || "").trim(),
         number: pin.number ?? index + 1,
         name: pin.name ?? String(pin.number ?? index + 1),
         x: Number(pin.x) || 0,
@@ -325,7 +372,7 @@ export class ProjectStore {
       layer: ["top", "bottom", "jumper"].includes(wire.layer) ? wire.layer : "top",
       bridgeType: ["normal", "jumper", "insulated"].includes(wire.bridgeType) ? wire.bridgeType : (wire.layer === "jumper" ? "jumper" : "normal"),
       style: wire.style || (wire.layer === "jumper" ? "dashed" : "solid"),
-      color: wire.color || "",
+      color: /^#[0-9a-f]{6}$/i.test(wire.color) ? wire.color : "",
       route: Array.isArray(wire.route) ? wire.route.map(p => ({ col: Number(p.col) || 0, row: Number(p.row) || 0 })) : []
     };
   }
@@ -334,22 +381,28 @@ export class ProjectStore {
     return ((Math.round((Number(value) || 0) / 90) * 90) % 360 + 360) % 360;
   }
 
-  addComponent(kind, col, row) {
-    this.snapshot(`Place ${kind}`);
+  addComponent(kind, col, row, rotation = 0) {
     const component = this.components.create(kind, col, row);
+    component.rot = rotation;
+    this.fitComponent(component);
+    this.snapshot(`Place ${kind}`);
     this.state.components.push(component);
     return component;
   }
 
-  addComponentFromTemplate(template, col, row) {
-    this.snapshot(`Place ${template?.name || "custom component"}`);
+  addComponentFromTemplate(template, col, row, rotation = 0) {
     const component = this.components.fromTemplate(template || {}, col, row);
+    component.rot = rotation;
+    this.fitComponent(component);
+    this.snapshot(`Place ${template?.name || "custom component"}`);
     this.state.components.push(component);
     return component;
   }
 
   addWire(route, options = {}) {
-    if (!Array.isArray(route) || route.length < 2) return null;
+    if (!Array.isArray(route)) return null;
+    route = route.filter((p, i) => !i || p.col !== route[i - 1].col || p.row !== route[i - 1].row);
+    if (route.length < 2) return null;
     this.snapshot("Add wire");
     const id = this.ids.next("W");
     const wire = this.normalizeWire({
@@ -365,8 +418,29 @@ export class ProjectStore {
     return wire;
   }
 
+  toggleCut(cut) {
+    if (!activeCut(this.state.board, cut)) throw new Error("Choose a stripboard and click between two pads along a copper strip.");
+    const key = cutKey(cut), cuts = this.state.board.cuts;
+    const index = cuts.findIndex(item => cutKey(item) === key);
+    this.snapshot(index < 0 ? "Cut copper strip" : "Restore copper strip");
+    if (index < 0) cuts.push({ ...cut }); else cuts.splice(index, 1);
+    return index < 0;
+  }
+
+  toggleSolderBridge(a, b, layer = "bottom") {
+    if (!insideBoard(this.state.board, a) || !insideBoard(this.state.board, b) || !adjacent(a, b)) throw new Error("A solder bridge joins two neighboring holes. Choose an adjacent hole or press Esc.");
+    const same = (p, q) => p.col === q.col && p.row === q.row;
+    const bridges = this.state.solderBridges;
+    const index = bridges.findIndex(item => item.layer === layer && ((same(item.a, a) && same(item.b, b)) || (same(item.a, b) && same(item.b, a))));
+    this.snapshot(index < 0 ? "Add solder bridge" : "Remove solder bridge");
+    if (index >= 0) { bridges.splice(index, 1); return null; }
+    const bridge = { id: this.ids.next("SB"), layer, a: { ...a }, b: { ...b } };
+    bridges.push(bridge);
+    return bridge;
+  }
+
   deleteSelection(selection) {
-    if (!selection) return false;
+    if (!selection || !["component", "wire", "text"].includes(selection.type)) return false;
     this.snapshot("Delete");
     if (selection.type === "component") {
       this.state.components = this.state.components.filter(item => item.id !== selection.id);
@@ -375,6 +449,10 @@ export class ProjectStore {
     }
     if (selection.type === "wire") {
       this.state.wires = this.state.wires.filter(item => item.id !== selection.id);
+      return true;
+    }
+    if (selection.type === "text") {
+      this.state.texts = this.state.texts.filter(item => item.id !== selection.id);
       return true;
     }
     return false;
@@ -409,6 +487,24 @@ export class ProjectStore {
     return this.state.components.flatMap(component => this.pinsFor(component));
   }
 
+  fitComponent(component) {
+    const pins = this.pinsFor({ ...component, col: 0, row: 0 });
+    const maxCol = Math.max(0, ...pins.map(p => p.col));
+    const maxRow = Math.max(0, ...pins.map(p => p.row));
+    const { cols, rows } = this.state.board;
+    if (maxCol >= cols || maxRow >= rows) throw new Error("This footprint is larger than the board. Increase the board size first.");
+    component.col = Math.max(0, Math.min(cols - maxCol - 1, Math.round(Number(component.col) || 0)));
+    component.row = Math.max(0, Math.min(rows - maxRow - 1, Math.round(Number(component.row) || 0)));
+    return component;
+  }
+
+  addText(col, row, text = "Note") {
+    this.snapshot("Add note");
+    const item = { id: this.ids.next("T"), col, row, text, color: "#e6edf3", size: 12 };
+    this.state.texts.push(item);
+    return item;
+  }
+
   resetProject() {
     this.state = newState();
     this.history = [];
@@ -418,7 +514,7 @@ export class ProjectStore {
   }
 
   isDipComponent(component) {
-    return component && ["ic", "dip8", "dip14", "dip16", "dip28"].includes(component.kind);
+    return component && this.components.isDipKind(component.kind) && component.pins.length % 2 === 0;
   }
 
   reflowDipPins(component, count = component?.pins?.length || 14) {
@@ -433,12 +529,12 @@ export class ProjectStore {
     for (let i = 0; i < perSide; i += 1) {
       const number = i + 1;
       const previous = byNumber.get(String(number));
-      pins.push({ number, name: previous?.name || `P${number}`, x: i, y: 0 });
+      pins.push({ number, name: previous?.name || `P${number}`, net: previous?.net || "", noConnect: !!previous?.noConnect, x: i, y: 0 });
     }
     for (let i = 0; i < perSide; i += 1) {
       const number = perSide + i + 1;
       const previous = byNumber.get(String(number));
-      pins.push({ number, name: previous?.name || `P${number}`, x: (perSide - 1) - i, y: rowGap });
+      pins.push({ number, name: previous?.name || `P${number}`, net: previous?.net || "", noConnect: !!previous?.noConnect, x: (perSide - 1) - i, y: rowGap });
     }
     component.pins = pins;
     component.w = Math.max(Number(component.w) || 0, perSide);

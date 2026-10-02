@@ -1,198 +1,116 @@
 <!doctype html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#10171c" />
   <title>Perfboard Editor</title>
   <link rel="stylesheet" href="css/app.css" />
 </head>
 <body>
   <header class="topbar">
-    <div class="brand">Perfboard Editor</div>
-    <button id="toggleLeftPanelBtn" title="Sol paneli aç/kapat" style="display:none;">‹ Left</button>
-    <button id="toggleRightPanelBtn" title="Sağ paneli aç/kapat" style="display:none;">Right ›</button>
+    <a class="brand" href="./" aria-label="Perfboard Editor"><span class="brand-mark" aria-hidden="true">▦</span><span>Perfboard<span class="brand-sub">EDITOR</span></span></a>
     <span class="divider"></span>
-    <button id="newProjectBtn">New</button>
-    <button id="openProjectBtn">Open</button>
-    <button id="saveProjectBtn">Save</button>
-    <button id="saveProjectAsBtn">Save As</button>
-    <button id="backupProjectBtn">Backup</button>
-    <button id="undoBtn" title="Undo (Ctrl+Z)">↶ Undo</button>
-    <button id="redoBtn" title="Redo (Ctrl+Shift+Z)">↷ Redo</button>
-    <span class="divider"></span>
-    <button id="printSchematicBtn">Scheme</button>
-    <button id="printLayoutBtn">Layout</button>
-    <select id="layoutPrintMode" title="Layout print mode">
-      <option value="auto">Layout: Auto</option>
-      <option value="two-up">Layout: Side by side</option>
-      <option value="separate">Layout: 2 pages</option>
-    </select>
-    <button id="view3dBtn">3D</button>
-    <button id="bomBtn">BOM</button>
-    <span class="spacer"></span>
-    <span id="saveState" class="save-state">Ready</span>
-    <button id="themeBtn" title="Theme">☾</button>
+    <div class="project-heading"><input id="projectName" aria-label="Project name" value="Untitled Project" maxlength="150" /><span id="saveState" class="save-state" role="status">Ready to create</span></div>
+    <div class="header-actions">
+      <details class="menu"><summary>Project <span>⌄</span></summary><div class="menu-content">
+        <button id="newProjectBtn">New project <kbd>⌘/Ctrl N</kbd></button>
+        <button id="openProjectBtn">Open project…</button>
+        <button id="examplesBtn">Browse examples…</button>
+        <button id="recoveryBtn">Recover previous work…</button>
+        <button id="notebookBtn">Project notebook…</button>
+        <hr/><button id="saveProjectAsBtn">Save as…</button><button id="backupProjectBtn">Download backup</button>
+      </div></details>
+      <button id="saveProjectBtn" class="primary" title="Save project (Ctrl+S)"><span class="save-label-wide">Save project</span><span class="save-label-compact">Save</span></button>
+      <details class="menu"><summary>Export <span>⌄</span></summary><div class="menu-content">
+        <button id="printLayoutBtn">Print board layout</button><button id="printSchematicBtn">Print connection sketch</button><button id="bomBtn">Bill of materials</button><button id="csvBtn">Download BOM (.csv)</button><button id="svgBtn">Download layout (.svg)</button>
+        <button id="assemblyBtn">Print assembly worksheet</button><button id="netlistBtn">Download connections (.json)</button>
+        <label>Print arrangement<select id="layoutPrintMode"><option value="auto">Automatic</option><option value="two-up">Side by side</option><option value="separate">Separate pages</option></select></label>
+      </div></details>
+      <button id="view3dBtn" title="Preview in 3D">3D</button>
+      <button id="helpBtn" class="icon-button" aria-label="Help and shortcuts">?</button><button id="themeBtn" class="icon-button" aria-label="Toggle light or dark theme">☾</button>
+    </div>
   </header>
-
   <div class="app-shell">
-    <aside class="side-panel left-panel">
-      <button id="collapseLeftPanelBtn" class="left-panel-collapse-button" title="Sol paneli kapat">‹</button>
-      <section class="panel-section">
-        <h2>Tools</h2>
-        <div class="button-grid">
-          <button class="tool-btn is-active" data-tool="select">Select</button>
-          <button class="tool-btn" data-tool="wire">Wire</button>
-          <button class="tool-btn" data-tool="wireErase">Erase</button>
-          <button class="tool-btn" data-tool="text">Text</button>
-        </div>
+    <aside class="side-panel left-panel" aria-label="Library and settings">
+      <div class="panel-heading"><span>WORKBENCH</span><button id="collapseLeftPanelBtn" class="icon-button" aria-label="Close library">‹</button></div>
+      <nav class="sidebar-tabs" aria-label="Workbench"><button data-page-target="library" class="is-active">Library</button><button data-page-target="board">Board</button><button data-page-target="view">View</button></nav>
+      <section class="panel-section sidebar-page library-page" data-page="library">
+        <div class="section-heading"><h2>Components</h2><span id="paletteCount" class="count-badge"></span></div>
+        <label class="search-field"><span aria-hidden="true">⌕</span><input id="paletteSearch" type="search" placeholder="Find a component…" aria-label="Search components" autocomplete="off"/><kbd>/</kbd></label>
+        <div id="paletteCategories" class="category-filters" aria-label="Component categories"></div>
+        <div class="palette-list" id="componentPalette"></div>
+        <div id="paletteEmpty" class="empty-state" hidden>No matching components. Try another name or category.</div>
+        <button id="customComponentBtn" class="create-component">＋ Create custom component</button>
+        <div id="customTemplatePalette" class="custom-template-palette"></div>
+        <div class="library-transfer"><button id="importTemplatesBtn">Import library</button><button id="exportTemplatesBtn">Export library</button></div>
+        <p class="help-text">Select a part, then click the board.<br><kbd>R</kbd> rotate · <kbd>Esc</kbd> finish placing</p>
       </section>
-
-      <section class="panel-section">
-        <h2>Components</h2>
-        <div class="palette-list">
-          <button data-place="resistor">Resistor</button>
-          <button data-place="resistorAxial3">Axial resistor / 3-hole</button>
-          <button data-place="resistorAxial5">Metal film resistor / 5-hole</button>
-          <button data-place="resistorVertical">Vertical resistor / 2-hole</button>
-          <button data-place="capacitor">Capacitor</button>
-          <button data-place="ceramicCapacitor2">Ceramic cap / 2-hole</button>
-          <button data-place="capacitorRadial3">Radial cap / 3-hole</button>
-          <button data-place="filmCapacitor5">Film cap / 5-hole</button>
-          <button data-place="electrolytic">Electrolytic</button>
-          <button data-place="electrolyticRadial2">Radial electrolytic / 2-hole</button>
-          <button data-place="led">LED</button>
-          <button data-place="crystal">Crystal</button>
-          <button data-place="smdResistor">SMD Resistor / 2-hole</button>
-          <button data-place="smdCapacitor">SMD Capacitor / 2-hole</button>
-          <button data-place="smdElectrolytic">SMD Electrolytic / 2-hole</button>
-          <button data-place="smdLed">SMD LED / 2-hole</button>
-          <button data-place="ic">IC / DIP</button>
-          <button data-place="dip8">DIP-8</button>
-          <button data-place="dip14">DIP-14</button>
-          <button data-place="dip16">DIP-16</button>
-          <button data-place="dip28">DIP-28</button>
-          <button data-place="header">Header</button>
-          <button data-place="screwTerminal2">Screw terminal 2P</button>
-          <button data-place="screwTerminal3">Screw terminal 3P</button>
-          <button data-place="jackpads">Jack pads</button>
-          <button data-place="diode">Diode</button>
-          <button data-place="diodeAxial4">Axial diode / 4-hole</button>
-          <button data-place="inductorAxial5">Axial inductor / 5-hole</button>
-          <button data-place="transistor">Transistor TO-92</button>
-          <button data-place="potentiometer">Potentiometer</button>
-          <button data-place="trimpot">Trimpot</button>
-          <button data-place="regulatorTo220">TO-220 Regulator</button>
-          <button data-place="tactSwitch">Tact switch 6x6</button>
-          <button data-place="testpad">Test pad</button>
-          <button id="customComponentBtn" type="button">Custom component…</button>
-          <div id="customTemplatePalette" class="custom-template-palette"></div>
-        </div>
-      </section>
-
-      <section class="panel-section">
-        <h2>Board</h2>
+      <section class="panel-section sidebar-page" data-page="board" hidden>
+        <h2>Board settings</h2>
         <div class="form-grid">
-          <label>Cols <input id="boardCols" type="number" min="5" /></label>
+          <label class="wide">Board type <select id="boardType"><option value="perfboard">Perfboard · separate pads</option><option value="stripboard">Stripboard · copper strips</option></select></label>
+          <label class="wide" id="stripDirectionField">Copper direction <select id="stripDirection"><option value="horizontal">Across columns →</option><option value="vertical">Across rows ↓</option></select></label>
+          <label>Columns <input id="boardCols" type="number" min="5" /></label>
           <label>Rows <input id="boardRows" type="number" min="5" /></label>
-          <label>Pitch px <input id="boardPitch" type="number" min="10" /></label>
+          <label>Grid scale (px) <input id="boardPitch" type="number" min="10" /></label>
           <label>Hole Ø mm <input id="holeDiameter" type="number" step="0.1" min="0.1" /></label>
           <label>Pad Ø mm <input id="padDiameter" type="number" step="0.1" min="0.2" /></label>
-          <label>Unit <input id="gridUnit" /></label>
+          <label>Pitch (mm) <input id="gridUnit" type="number" min="0.5" max="10" step="0.01" /></label>
           <label>Color <input id="boardColor" type="color" /></label>
           <label>Label font <input id="labelFontSize" type="number" step="0.5" min="4" max="18" /></label>
           <label>Pin font <input id="pinFontSize" type="number" step="0.5" min="3" max="14" /></label>
-          <label>Label wrap <input id="labelWrapChars" type="number" min="8" max="48" /></label>
+          <label>Label length <input id="labelWrapChars" type="number" min="8" max="48" /></label>
           <label>Edge coords <select id="coordMode"><option value="numbersTopLettersSide">Top numbers / side letters</option><option value="lettersTopNumbersSide">Top letters / side numbers</option></select></label>
           <label class="check-row"><input id="coordLabels" type="checkbox" /> Edge labels</label>
           <label class="check-row"><input id="pthMode" type="checkbox" /> PTH holes</label>
-          <button id="applyBoardBtn" class="wide">Apply board</button>
+          <button id="applyBoardBtn" class="wide primary">Apply settings</button>
         </div>
+        <p class="help-text" id="copperHelp">Stripboard has copper on the bottom face. Cut between pads and join neighboring holes with solder bridges.</p>
       </section>
 
-      <section class="panel-section">
-        <h2>View</h2>
+      <section class="panel-section sidebar-page" data-page="view" hidden>
+        <h2>Display settings</h2>
         <div class="view-options">
           <label class="view-check"><input id="viewShowLabels" type="checkbox" /> Labels</label>
           <label class="view-check"><input id="viewShowPinNames" type="checkbox" /> Pin names</label>
           <label class="view-check"><input id="viewShowRulers" type="checkbox" /> Rulers</label>
           <label class="view-check"><input id="viewShowBack" type="checkbox" /> Opposite side ghost</label>
           <label class="view-check"><input id="viewWiresOnTop" type="checkbox" /> Wires above components</label>
+          <label class="view-check"><input id="viewShowGuides" type="checkbox" /> Missing connection guides</label>
         </div>
       </section>
 
     </aside>
-
-    <main class="workspace">
+    <main class="workspace" aria-label="Board workspace">
       <svg id="editorSvg" tabindex="0" aria-label="Perfboard editor canvas"></svg>
-      <div id="editorRulerTop" class="editor-ruler editor-ruler-top" aria-hidden="true"></div>
-      <div id="editorRulerLeft" class="editor-ruler editor-ruler-left" aria-hidden="true"></div>
-      <div id="miniMap" class="mini-map" aria-hidden="true">
-        <button id="miniMapToggleBtn" class="mini-map-toggle" title="Mini map aç/kapat" aria-label="Mini map aç/kapat">−</button>
-        <canvas id="miniMapCanvas" width="120" height="80"></canvas>
-        <span>map</span>
+      <div class="workspace-toolbar">
+        <div class="toolbar-group"><button id="toggleLeftPanelBtn" class="icon-button" title="Library and settings" aria-label="Toggle library">☷</button><span class="toolbar-divider"></span>
+          <button class="tool-btn is-active" data-tool="select" title="Select (V)">↖ <span>Select</span></button><button class="tool-btn" data-tool="wire" title="Wire (W)">⌁ <span>Wire</span></button><button class="tool-btn" data-tool="wireErase" title="Erase wire (E)">⌫ <span>Erase</span></button><button class="tool-btn" data-tool="text" title="Text note (T)">T <span>Text</span></button>
+          <details class="copper-menu"><summary title="Copper tools" aria-label="Copper tools">⋯</summary><div class="copper-menu-content"><button class="tool-btn" data-tool="cut" title="Cut or restore a strip (C)">✂ <span>Cut strip</span></button><button class="tool-btn" data-tool="solder" title="Join neighboring pads (B)">⊕ <span>Solder bridge</span></button><button id="copperPlanBtn">Cuts &amp; bridges…</button></div></details>
+        </div>
+        <div class="toolbar-group"><button id="undoBtn" class="icon-button" title="Undo (Ctrl+Z)" aria-label="Undo">↶</button><button id="redoBtn" class="icon-button" title="Redo (Ctrl+Shift+Z)" aria-label="Redo">↷</button><span class="toolbar-divider"></span><button id="toggleRightPanelBtn" class="icon-button" title="Inspector and objects" aria-label="Toggle inspector">☷</button></div>
       </div>
+      <div class="workspace-subbar"><div class="floating-layer-controls" aria-label="Layer view"><button class="face-btn is-active" data-face="top">Top</button><button class="face-btn" data-face="bottom">Bottom</button><button class="face-btn" data-face="both">Both</button></div><span id="boardSummary"></span><span id="activeToolBadge">Select</span></div>
+      <div id="editorRulerBottom" class="editor-ruler editor-ruler-bottom" aria-hidden="true"></div><div id="editorRulerLeft" class="editor-ruler editor-ruler-left" aria-hidden="true"></div>
+      <div id="miniMap" class="mini-map"><button id="miniMapToggleBtn" class="mini-map-toggle" title="Toggle minimap" aria-label="Toggle minimap">−</button><canvas id="miniMapCanvas" width="120" height="80" aria-hidden="true"></canvas><span>OVERVIEW</span></div>
       <div id="fixedSelectionLabel" class="fixed-selection-label is-empty"></div>
-      <div class="floating-layer-controls" aria-label="Layer view">
-        <button class="face-btn is-active" data-face="top">Top</button>
-        <button class="face-btn" data-face="bottom">Bottom</button>
-        <button class="face-btn" data-face="both">Both</button>
-      </div>
-      <div class="floating-controls">
-        <button id="zoomOutBtn" title="Zoom out">−</button>
-        <span id="zoomText">100%</span>
-        <button id="zoomInBtn" title="Zoom in">+</button>
-        <button id="zoomResetBtn" title="Reset zoom">Reset</button>
-        <button id="centerBoardBtn" title="Center board">Center</button>
-        <button id="fullscreenViewBtn" title="View-only fullscreen">Fullscreen</button>
-      </div>
-      <div id="statusBar" class="status-bar is-empty"></div>
+      <div class="workspace-footer"><div class="floating-controls"><button id="zoomOutBtn" aria-label="Zoom out">−</button><span id="zoomText">100%</span><button id="zoomInBtn" aria-label="Zoom in">+</button><button id="zoomResetBtn" title="Actual zoom">1:1</button><button id="centerBoardBtn" title="Fit board (F)">Fit</button><button id="fullscreenViewBtn" title="View-only fullscreen">⛶</button></div><div id="statusBar" class="status-bar" role="status">Select a component to start.</div><span id="cursorCoordinates"></span></div>
       <div id="contextMenu" class="context-menu hidden" role="menu"></div>
     </main>
-
-    <aside class="side-panel right-panel">
-      <button id="collapseRightPanelBtn" class="right-panel-collapse-button" title="Sağ paneli kapat">›</button>
-      <section class="panel-section">
-        <h2>Inspector</h2>
-        <div id="inspector">Nothing selected.</div>
-      </section>
-      <section class="panel-section">
-        <h2>Selected pins</h2>
-        <div id="pinList" class="pin-list-empty">Select a component to edit pin names.</div>
-      </section>
-
-      <section class="panel-section">
-        <h2>Components</h2>
-        <div id="componentList" class="object-list"></div>
-      </section>
-      <section class="panel-section">
-        <h2>Wires</h2>
-        <div id="wireList" class="object-list"></div>
-      </section>
-      <section class="panel-section">
-        <h2>History</h2>
-        <div id="historyList" class="history-list"></div>
-      </section>
-      <section class="panel-section">
-        <h2>Checks</h2>
-        <button id="runChecksBtn">Run simple checks</button>
-        <div id="checkResults" class="check-results"></div>
-      </section>
+    <aside class="side-panel right-panel" aria-label="Inspector">
+      <div class="panel-heading"><span>INSPECTOR</span><button id="collapseRightPanelBtn" class="icon-button" aria-label="Close inspector">›</button></div>
+      <section class="panel-section"><h2>Selection</h2><div id="inspector"></div></section>
+      <section class="panel-section"><h2>Pin connections</h2><div id="pinList" class="pin-list-empty"></div></section>
+      <details class="panel-section" id="netPanel" open><summary class="net-panel-heading">Connection plan <span id="netCount" class="count-badge">0</span></summary><div id="netList" class="net-list"></div></details>
+      <section class="panel-section objects-section"><div class="section-heading"><h2>Objects</h2><span id="objectCount" class="count-badge"></span></div><label class="search-field"><span aria-hidden="true">⌕</span><input id="objectSearch" type="search" placeholder="Reference, value or net…" aria-label="Search objects"/></label><div class="object-tabs"><button data-object-tab="component" class="is-active">Parts</button><button data-object-tab="wire">Wires</button><button data-object-tab="text">Notes</button></div><div id="componentList" class="object-list"></div><div id="wireList" class="object-list" hidden></div><div id="textList" class="object-list" hidden></div></section>
+      <section class="panel-section"><div class="section-heading"><h2>Layout checks</h2><button id="runChecksBtn">Run checks</button></div><div id="checkResults" class="check-results">Check routes, net names and unconnected pins.</div></section>
+      <details class="panel-section"><summary>History</summary><div id="historyList" class="history-list"></div></details>
     </aside>
   </div>
-
   <input id="fallbackFileInput" type="file" accept=".json,.perfboard.json,application/json" hidden />
-
-  <div id="modal" class="modal hidden">
-    <div class="modal-card">
-      <div class="modal-head">
-        <h2 id="modalTitle">Modal</h2>
-        <button id="modalCloseBtn">×</button>
-      </div>
-      <div id="modalBody" class="modal-body"></div>
-    </div>
-  </div>
-
-  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <input id="templateFileInput" type="file" accept=".json,application/json" hidden />
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-card"><div class="modal-head"><h2 id="modalTitle">Modal</h2><button id="modalCloseBtn" aria-label="Close dialog">×</button></div><div id="modalBody" class="modal-body"></div></div></div>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>

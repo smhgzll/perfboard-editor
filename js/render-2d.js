@@ -1,4 +1,6 @@
 import { $, svgEl, Geometry, round } from "./core.js";
+import { copperRuns, cutEnds, activeCut, adjacent } from "./copper.js";
+import { canonicalNet } from "./connectivity.js";
 
 export class BoardRenderer2D {
   constructor(svg, store) {
@@ -19,22 +21,31 @@ export class BoardRenderer2D {
     const { state } = this.store;
     const board = state.board;
     const size = Geometry.boardPixelSize(board);
-    this.svg.replaceChildren();
+    const boardKey = JSON.stringify([board, state.view.face, state.view.showBack]);
+    const reusedBoard = boardKey === this.cachedBoardKey;
+    this.svg.replaceChildren(...(reusedBoard ? this.cachedBoardNodes : []));
     this.labelBoxes = [];
     this.svg.setAttribute("viewBox", `0 0 ${size.width} ${size.height}`);
     this.svg.style.width = `${size.width * this.zoom}px`;
     this.svg.style.height = `${size.height * this.zoom}px`;
 
+    if (!reusedBoard) {
     this.drawWorkspaceGrid(board, size);
     this.drawBoard(board, size);
     // Rulers are rendered as fixed viewport overlays by app.js so they stay on editor edges.
     if (board.coordinateLabels !== false) this.drawCoordinateLabels(board);
+    this.cachedBoardNodes = [...this.svg.childNodes]; this.cachedBoardKey = boardKey;
+    }
+    this.drawCopperHighlight();
+    this.drawConnectionGuides();
+    this.drawSolderBridges();
     if (!state.view.wiresOnTop) this.drawWires();
     this.drawComponents();
     if (state.view.wiresOnTop) this.drawWires();
-    this.drawDraftWire();
-    this.drawHoverHole();
+    this.drawNotes();
+    this.layoutComponentLabels(size);
     this.drawSelectedLabelOverlay();
+    this.renderTransient();
   }
 
   drawWorkspaceGrid(board, size) {
@@ -65,10 +76,17 @@ export class BoardRenderer2D {
       style: `fill:${board.color || "var(--board)"}`
     }));
 
+    const view = this.store.state.view;
+    if (view.face !== "top" || view.showBack) {
+      const strips = svgEl("g", { class: `copper-strips${view.face === "top" ? " is-ghost" : ""}` });
+      copperRuns(board).forEach(run => strips.append(svgEl("path", { class: "copper-strip", d: this.wirePath(run), "stroke-width": board.pitchPx * 0.38 })));
+      this.svg.append(strips);
+    }
+
     // Screen holes are intentionally smaller than the physical ratio.
     // A literal 0.9/2.54 scale makes the board look crowded at common zooms.
-    const padRadius = Math.max(1.6, Math.min(board.pitchPx * 0.24, (board.padDiameterMm / 2.54) * board.pitchPx * 0.34));
-    const holeRadius = Math.max(0.75, Math.min(board.pitchPx * 0.13, (board.holeDiameterMm / 2.54) * board.pitchPx * 0.28));
+    const padRadius = Math.max(1.6, Math.min(board.pitchPx * 0.24, (board.padDiameterMm / (parseFloat(board.gridUnit) || 2.54)) * board.pitchPx * 0.34));
+    const holeRadius = Math.max(0.75, Math.min(board.pitchPx * 0.13, (board.holeDiameterMm / (parseFloat(board.gridUnit) || 2.54)) * board.pitchPx * 0.28));
     const holes = svgEl("g", { class: "board-holes" });
     for (let row = 0; row < board.rows; row += 1) {
       for (let col = 0; col < board.cols; col += 1) {
@@ -78,6 +96,62 @@ export class BoardRenderer2D {
       }
     }
     this.svg.append(holes);
+    if (view.face !== "top" || view.showBack) {
+      const cuts = svgEl("g", { class: `copper-cuts${view.face === "top" ? " is-ghost" : ""}` });
+      (board.cuts || []).filter(cut => activeCut(board, cut)).forEach(cut => cuts.append(this.cutMark(cut)));
+      this.svg.append(cuts);
+    }
+  }
+
+  cutMark(cut, preview = false) {
+    const [a, b] = cutEnds(cut), p = Geometry.gridToSvg(this.store.state.board, { col: (a.col + b.col) / 2, row: (a.row + b.row) / 2 });
+    const r = this.store.state.board.pitchPx * 0.18;
+    const node = svgEl("g", { class: preview ? "cut-preview" : "copper-cut" });
+    node.append(svgEl("path", { d: `M${p.x - r} ${p.y - r}L${p.x + r} ${p.y + r}M${p.x - r} ${p.y + r}L${p.x + r} ${p.y - r}` }));
+    return node;
+  }
+
+  drawSolderBridges() {
+    const view = this.store.state.view, group = svgEl("g", { class: "solder-bridges" });
+    (this.store.state.solderBridges || []).forEach(bridge => {
+      const ghost = view.face !== "both" && view.face !== bridge.layer;
+      if (ghost && !view.showBack) return;
+      const highlighted = this.groupHighlighted(this.connectivity?.groupAt(bridge.layer, bridge.a));
+      group.append(svgEl("path", { class: `solder-bridge${ghost ? " is-ghost" : ""}${highlighted ? " net-highlight" : ""}`, d: this.wirePath([bridge.a, bridge.b]), "stroke-width": this.store.state.board.pitchPx * 0.22 }));
+    });
+    this.svg.append(group);
+  }
+
+  groupHighlighted(group) {
+    if (!group) return false;
+    return (this.activeNet && [...group.nets].some(n => canonicalNet(n) === canonicalNet(this.activeNet))) || (this.selection?.type === "wire" && group === this.connectivity?.wireGroups.get(this.selection.id));
+  }
+
+  drawCopperHighlight() {
+    const { board, view } = this.store.state;
+    if (view.face === "top" && !view.showBack) return;
+    const group = svgEl("g", { class: `copper-highlights${view.face === "top" ? " is-ghost" : ""}`, "pointer-events": "none" });
+    copperRuns(board).forEach(run => {
+      const point = { col: Math.round(run[0].col), row: Math.round(run[0].row) };
+      if (!this.groupHighlighted(this.connectivity?.groupAt("bottom", point))) return;
+      group.append(svgEl("path", { class: "copper-net-highlight", d: this.wirePath(run), "stroke-width": board.pitchPx * 0.38 }));
+    });
+    this.svg.insertBefore(group, this.svg.querySelector(".board-holes"));
+  }
+
+  drawConnectionGuides() {
+    if (this.store.state.view.showGuides === false) return;
+    const group = svgEl("g", { class: "connection-guides" });
+    (this.guides || []).forEach(guide => {
+      const selected = !this.activeNet || canonicalNet(this.activeNet) === canonicalNet(guide.net);
+      const path = svgEl("path", { class: `connection-guide${selected ? "" : " is-muted"}`, "data-net": guide.net, d: this.wirePath([guide.a, guide.b]) });
+      path.append(svgEl("title", {}, `${guide.net}: connection still needed`)); group.append(path);
+      for (const point of [guide.a, guide.b]) {
+        const p = Geometry.gridToSvg(this.store.state.board, point);
+        group.append(svgEl("circle", { class: "guide-end", cx: p.x, cy: p.y, r: 4 }));
+      }
+    });
+    this.svg.append(group);
   }
 
   drawRulers(board) {
@@ -130,7 +204,7 @@ export class BoardRenderer2D {
     this.connectedPinKeys = this.buildConnectedPinKeySet();
     const group = svgEl("g", { class: "components-layer" });
     const selectedId = this.selection?.type === "component" ? this.selection.id : null;
-    const components = this.store.state.components || [];
+    const components = (this.store.state.components || []).filter(c => this.store.state.view.face === "both" || (c.side || "top") === this.store.state.view.face || this.store.state.view.showBack);
     components.filter(component => component.id !== selectedId).forEach(component => {
       group.append(this.renderComponent(component));
     });
@@ -145,10 +219,8 @@ export class BoardRenderer2D {
     const component = this.store.componentById(this.selection.id);
     if (!component) return;
     const overlay = svgEl("g", { class: "selected-label-overlay" });
-    const beforeBoxes = this.labelBoxes;
-    this.labelBoxes = [];
-    const cloneSource = this.renderComponent(component);
-    this.labelBoxes = beforeBoxes;
+    const cloneSource = [...this.svg.querySelectorAll(".component-annotations")].find(node => node.dataset.id === component.id);
+    if (!cloneSource) return;
     cloneSource.querySelectorAll("text.comp-label, text.pin-label").forEach(text => {
       const copy = text.cloneNode(true);
       if (copy.classList.contains("comp-label")) copy.classList.add("selected-comp-label");
@@ -160,7 +232,9 @@ export class BoardRenderer2D {
   renderComponent(component) {
     const board = this.store.state.board;
     const pins = this.store.pinsFor(component).map(item => ({ ...item, svg: Geometry.gridToSvg(board, item) }));
-    const node = svgEl("g", { class: "component", "data-id": component.id });
+    const ghost = this.store.state.view.face !== "both" && (component.side || "top") !== this.store.state.view.face;
+    const node = svgEl("g", { class: `component${ghost ? " ghost-component" : ""}`, "data-id": component.id });
+    if (!pins.length) return node;
     if (pins.length === 1) this.drawTestPad(node, component, pins);
     else if (component.kind === "ic") this.drawIc(node, component, pins);
     else if (String(component.kind || "").startsWith("dip")) this.drawIc(node, component, pins);
@@ -168,7 +242,7 @@ export class BoardRenderer2D {
     else if (component.bodyShape) this.drawCustomComponent(node, component, pins);
     else if (this.isCompactSmdFootprint(component, pins)) this.drawSmdTwoPinPart(node, component, pins);
     else this.drawTwoPinPart(node, component, pins);
-    if (this.selection?.type === "component" && this.selection.id === component.id) this.drawSelection(node, pins);
+    if (this.isSelected("component", component.id)) this.drawSelection(node, pins);
     return node;
   }
 
@@ -307,8 +381,9 @@ export class BoardRenderer2D {
     const minY = Math.min(...ys);
     const bodyW = Math.max(Number(component.bodyW || component.w || 1), Math.max(...pins.map(pin => pin.pin.x || 0)) + 1);
     const bodyH = Math.max(Number(component.bodyH || component.h || 1), Math.max(...pins.map(pin => pin.pin.y || 0)) + 1);
-    const w = Math.max(board.pitchPx * 0.9, (bodyW - 1) * board.pitchPx + board.pitchPx * 0.9);
-    const h = Math.max(board.pitchPx * 0.9, (bodyH - 1) * board.pitchPx + board.pitchPx * 0.9);
+    const rotated = component.rot === 90 || component.rot === 270;
+    const w = Math.max(board.pitchPx * 0.9, ((rotated ? bodyH : bodyW) - 1) * board.pitchPx + board.pitchPx * 0.9);
+    const h = Math.max(board.pitchPx * 0.9, ((rotated ? bodyW : bodyH) - 1) * board.pitchPx + board.pitchPx * 0.9);
     const x = minX - board.pitchPx * 0.45;
     const y = minY - board.pitchPx * 0.45;
     const shape = component.bodyShape || "roundrect";
@@ -349,7 +424,9 @@ export class BoardRenderer2D {
   drawPin(node, pin) {
     const key = `${pin.component.id}|${pin.pinIndex}`;
     const classes = `comp-pin${this.connectedPinKeys?.has(key) ? " connected" : ""}`;
-    node.append(svgEl("circle", { class: classes, cx: pin.svg.x, cy: pin.svg.y, r: 4.1 }));
+    const marker = svgEl("circle", { class: classes, cx: pin.svg.x, cy: pin.svg.y, r: 4.1 });
+    marker.append(svgEl("title", {}, String(pin.pin.name || pin.pin.number || "")));
+    node.append(marker);
     if (this.store.state.view.showPinNames) {
       const fontSize = Math.min(this.viewNumber("pinFontSize", 6, 3, 14), Math.max(3.5, this.store.state.board.pitchPx * 0.35));
       this.appendEllipsizedText(node, pin.pin.name || pin.pin.number || "", pin.svg.x + 5.8, pin.svg.y - 5.8, {
@@ -362,21 +439,7 @@ export class BoardRenderer2D {
   }
 
   buildConnectedPinKeySet() {
-    const keys = new Set();
-    const pinsByHole = new Map();
-    this.store.allPins().forEach(pin => {
-      const holeKey = `${pin.col},${pin.row}`;
-      if (!pinsByHole.has(holeKey)) pinsByHole.set(holeKey, []);
-      pinsByHole.get(holeKey).push(pin);
-    });
-
-    this.store.state.wires.forEach(wire => {
-      (wire.route || []).forEach(point => {
-        const pins = pinsByHole.get(`${point.col},${point.row}`) || [];
-        pins.forEach(pin => keys.add(`${pin.component.id}|${pin.pinIndex}`));
-      });
-    });
-    return keys;
+    return new Set(this.connectivity?.pins.keys() || []);
   }
 
   drawComponentLabel(node, component, x, y, options = {}) {
@@ -402,9 +465,67 @@ export class BoardRenderer2D {
       "text-anchor": options.anchor || "middle",
       style: `font-size:${Number(options.fontSize) || 8}px`
     }, label);
-    if (full && label !== full) node.append(svgEl("title", {}, full));
+    if (full) node.append(svgEl("title", {}, full));
     parent.append(node);
     return node;
+  }
+
+  layoutComponentLabels(size) {
+    // Measure attached SVG text: character counts miss wide letters and font settings.
+    const occupied = [...this.svg.querySelectorAll(".comp-pin, .edge-coord-label, .note")].map(node => {
+      const box = node.getBBox();
+      return { x: box.x - 2, y: box.y - 2, w: box.width + 4, h: box.height + 4 };
+    });
+    const layer = svgEl("g", { class: "component-labels-layer" });
+    const groups = new Map();
+    const labels = [...this.svg.querySelectorAll(".components-layer .comp-label, .components-layer .pin-label")];
+    const selectedId = this.selection?.type === "component" ? this.selection.id : null;
+    labels.sort((a, b) => {
+      const priority = node => (node.closest(".component").dataset.id === selectedId ? 0 : 2) + (node.classList.contains("pin-label") ? 1 : 0);
+      return priority(a) - priority(b);
+    });
+    for (const label of labels) {
+      const component = label.closest(".component");
+      const id = component.dataset.id;
+      if (!groups.has(id)) {
+        const group = svgEl("g", { class: `component-annotations${component.classList.contains("ghost-component") ? " ghost-component" : ""}`, "data-id": id });
+        groups.set(id, group);
+        layer.append(group);
+        const fullLabel = component.querySelector(".comp-label title")?.textContent;
+        if (fullLabel) component.append(svgEl("title", {}, fullLabel));
+      }
+      const box = label.getBBox();
+      const pin = label.classList.contains("pin-label");
+      const pitch = this.store.state.board.pitchPx;
+      const width = box.width, height = box.height;
+      const offsets = [[0, 0]];
+      if (pin) {
+        // Keep names near their pin; try the opposite side before moving rows.
+        offsets.push([-width - 11.6, 0], [0, height + 11.6], [-width - 11.6, height + 11.6]);
+      }
+      for (let step = 1; step <= 4; step++) {
+        const distance = step * Math.max(height + 5, pitch * 0.5);
+        offsets.push([0, -distance], [0, distance]);
+        if (!pin) offsets.push([-step * (width + 6) / 2, 0], [step * (width + 6) / 2, 0]);
+      }
+      const chosen = offsets.find(([dx, dy]) => {
+        const rect = { x: box.x + dx - 2, y: box.y + dy - 2, w: width + 4, h: height + 4 };
+        if (rect.x < 0 || rect.y < 0 || rect.x + rect.w > size.width || rect.y + rect.h > size.height) return false;
+        if (occupied.some(other => Geometry.rectsOverlap(other, rect, 1))) return false;
+        occupied.push(rect);
+        return true;
+      });
+      if (!chosen) {
+        // Dense layouts retain full names on component/pin tooltips.
+        label.remove();
+        continue;
+      }
+      label.setAttribute("x", Number(label.getAttribute("x")) + chosen[0]);
+      label.setAttribute("y", Number(label.getAttribute("y")) + chosen[1]);
+      groups.get(id).append(label);
+    }
+    this.labelBoxes = occupied;
+    this.svg.append(layer);
   }
 
   ellipsize(value, maxChars = 24) {
@@ -543,10 +664,11 @@ export class BoardRenderer2D {
       const isGhost = this.wireIsGhost(wire);
       const path = this.wirePath(wire.route);
       const isBridge = wire.bridgeType === "jumper" || wire.bridgeType === "insulated" || wire.layer === "jumper";
-      const classes = ["wire", wire.layer || "top", wire.style === "dashed" ? "dashed" : "", isBridge ? "bridge" : "", wire.bridgeType === "insulated" ? "insulated" : "", isGhost ? "ghost" : "", this.selection?.type === "wire" && this.selection.id === wire.id ? "selected" : ""].filter(Boolean).join(" ");
+      const classes = ["wire", wire.layer || "top", wire.style === "dashed" ? "dashed" : "", isBridge ? "bridge" : "", wire.bridgeType === "insulated" ? "insulated" : "", isGhost ? "ghost" : "", this.isSelected("wire", wire.id) ? "selected" : "", this.groupHighlighted(this.connectivity?.wireGroups.get(wire.id)) ? "net-highlight" : ""].filter(Boolean).join(" ");
       if (isBridge && !isGhost) group.append(svgEl("path", { class: "wire-bridge-casing", d: path }));
+      if (!isGhost) group.append(svgEl("path", { class: "wire-hit", d: path, "data-id": wire.id }));
       group.append(svgEl("path", { class: classes, d: path, "data-id": wire.id, style: wire.color ? `stroke:${wire.color}` : "" }));
-      if (this.selection?.type === "wire" && this.selection.id === wire.id) this.drawWireHandles(group, wire);
+      if (this.isSelected("wire", wire.id)) this.drawWireHandles(group, wire);
     });
     this.svg.append(group);
   }
@@ -573,9 +695,9 @@ export class BoardRenderer2D {
 
   drawWireHandles(group, wire) {
     const board = this.store.state.board;
-    wire.route.forEach(point => {
+    wire.route.forEach((point, index) => {
       const p = Geometry.gridToSvg(board, point);
-      group.append(svgEl("circle", { class: "wire-handle", cx: p.x, cy: p.y, r: 5 }));
+      group.append(svgEl("circle", { class: "wire-handle", cx: p.x, cy: p.y, r: 5, "data-id": wire.id, "data-wire-handle": index }));
     });
   }
 
@@ -589,6 +711,41 @@ export class BoardRenderer2D {
     if (!this.hoverHole) return;
     const p = Geometry.gridToSvg(this.store.state.board, this.hoverHole);
     this.svg.append(svgEl("circle", { class: "hover-hole", cx: p.x, cy: p.y, r: 9 }));
+  }
+
+  isSelected(type, id) { return (this.selections || [this.selection]).some(s => s?.type === type && s.id === id); }
+
+  drawNotes() {
+    this.store.state.texts.forEach(note => {
+      const p = Geometry.gridToSvg(this.store.state.board, note);
+      const lines = String(note.text).split("\n");
+      const size = Number(note.size) || 12;
+      const group = svgEl("g", { class: "note", "data-id": note.id });
+      const width = Math.max(30, Math.max(...lines.map(line => line.length)) * size * .62);
+      group.append(svgEl("rect", { x: p.x - 4, y: p.y - size, width: width + 8, height: lines.length * size * 1.35 + 6, fill: "transparent", class: this.isSelected("text", note.id) ? "selected-outline" : "note-hit" }));
+      const text = svgEl("text", { x: p.x, y: p.y, fill: note.color || "#e6edf3", "font-size": size });
+      lines.forEach((line, i) => text.append(svgEl("tspan", { x: p.x, dy: i ? size * 1.35 : 0 }, line || " ")));
+      group.append(text); this.svg.append(group);
+    });
+  }
+
+  renderTransient() {
+    this.svg.querySelector(".transient-layer")?.remove();
+    const group = svgEl("g", { class: "transient-layer", "pointer-events": "none" });
+    if (this.draftRoute.length) group.append(svgEl("path", { class: "wire jumper dashed", d: this.wirePath(this.draftRoute) }));
+    if (this.hoverHole) {
+      const p = Geometry.gridToSvg(this.store.state.board, this.hoverHole);
+      group.append(svgEl("circle", { class: "hover-hole", cx: p.x, cy: p.y, r: 7 }));
+    }
+    if (this.previewComponent) {
+      const preview = svgEl("g", { class: "placement-preview" });
+      const labelBoxes = this.labelBoxes; this.labelBoxes = [];
+      preview.append(this.renderComponent(this.previewComponent)); this.labelBoxes = labelBoxes;
+      group.append(preview);
+    }
+    if (this.copperPreview?.axis && this.store.state.board.type === "stripboard") group.append(this.cutMark(this.copperPreview, true));
+    if (this.copperPreview?.a) group.append(svgEl("path", { class: `solder-preview${adjacent(this.copperPreview.a, this.copperPreview.b) ? "" : " invalid"}`, d: this.wirePath([this.copperPreview.a, this.copperPreview.b]) }));
+    this.svg.append(group);
   }
 
   drawFocusBanner() {
